@@ -9,6 +9,7 @@ var ObjectID = require('mongodb').ObjectID;
 
 // //ROUTES
 var studentroute = require('./routes/student_routes');
+var batchtyperoute = require('./routes/batchtype_routes')
 var dbb = require('./configuration/collection');
 
 //Configuring Port
@@ -36,6 +37,7 @@ if (prod) {
 }
 
 //Configuring Routes
+batchtyperoute.configure(app,mongo,ObjectID,url,assert,dbb);
 studentroute.configure(app, mongo, ObjectID, url, assert, dbb);
 // adminroute.configure(app, mongo, ObjectID, url, assert, dbb);
 // domainroute.configure(app, mongo, ObjectID, url, assert, dbb);
