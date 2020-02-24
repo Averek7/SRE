@@ -1,5 +1,5 @@
 
-/configuration/connection.js
+# /configuration/connection.js
 
 # Node build artifacts
 node_modules
