@@ -62,12 +62,12 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
             try {
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
-                    db.db().collection(dbb.USER).insertOne(new_batchtype, function (err, result) {
+                    db.db().collection(dbb.BATCHTYPE).insertOne(new_batchtype, function (err, result) {
                         if (err) {
-                            callBack(null, true, "Error Occurred");
+                            callBack(null, false, "Error Occurred");
                         }
                         else {
-                            callBack(result, false, "Batchtype Added Successfully");
+                            callBack(result, true, "Batchtype Added Successfully");
                         }
                         db.close();
                     })
@@ -80,7 +80,7 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
         //End of Add batchtype
 
         //Start of Update batchtype
-        update_batchtype: function (id,duration,batchtype_name) {
+        update_batchtype: function (id,duration,batchtype_name,callBack) {
             try {
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
@@ -93,9 +93,9 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                         }
                     }, { upsert: false }, function (err, result) {
                         if (err) {
-                            callBack(null, true, err);
+                            callBack(null, false, err);
                         } else {
-                            callBack(result, false, "Updated Successfully");
+                            callBack(result, true, "Updated Successfully");
                         }
                         db.close();
                     });
