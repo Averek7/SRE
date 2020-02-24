@@ -9,7 +9,9 @@ var ObjectID = require('mongodb').ObjectID;
 
 // //ROUTES
 var studentroute = require('./routes/student_routes');
-var studentroute = require('./routes/batch_routes');
+var batchroute = require('./routes/batch_routes');
+var trainerroute = require('./routes/trainer_routes');
+
 
 var dbb = require('./configuration/collection');
 
@@ -42,6 +44,8 @@ studentroute.configure(app, mongo, ObjectID, url, assert, dbb);
 // adminroute.configure(app, mongo, ObjectID, url, assert, dbb);
 // domainroute.configure(app, mongo, ObjectID, url, assert, dbb);
 batchroute.configure(app, mongo, ObjectID, url, assert, dbb);
+trainerroute.configure(app, mongo, ObjectID, url, assert, dbb);
+
 // forumroute.configure(app, mongo, ObjectID, url, assert, dbb);
 // questionroute.configure(app, mongo, ObjectID, url, assert, dbb);
 // assessmentroute.configure(app, mongo, ObjectID, url, assert, dbb);

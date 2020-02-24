@@ -1,21 +1,21 @@
 module.exports = function (mongo, ObjectID, url, assert, dbb) {
-    var batch_module = {
+    var trainer_module = {
 
         //Start of Student Exists
-        batch_exists: function (batch_name, callBack) {
+        trainer_exists: function (trainer_name, callBack) {
             try {
                 exists = false;
                 user_token = false;
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
-                    var cursor = db.db().collection(dbb.BATCH).find({ "batch_name": batch_name });
+                    var cursor = db.db().collection(dbb.USERS).find({ "trainer_name": trainer_name });
                     cursor.forEach(function (doc, err) {
                         assert.equal(null, err);
                         exists = true;
                         user_token = doc.user_token;
                     }, function () {
                         if (exists) {
-                            callBack(user_token, true, "Batch Already Exists!");
+                            callBack(user_token, true, "Trainer Already Exists!");
                         }
                         else {
                             callBack(exists, false, "");
@@ -58,16 +58,16 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
         // //End of User Exists
 
         //Start of Add Student
-        add_batch: function (new_batch, callBack) {
+        add_trainer: function (new_trainer, callBack) {
             try {
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
-                    db.db().collection(dbb.BATCH).insertOne(new_batch, function (err, result) {
+                    db.db().collection(dbb.USERS).insertOne(new_trainer, function (err, result) {
                         if (err) {
                             callBack(null, true, "Error Occurred");
                         }
                         else {
-                            callBack(result, false, "Batch Added Successfully");
+                            callBack(result, false, "Trainer Added Successfully");
                         }
                         db.close();
                     })
@@ -80,16 +80,16 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
         //End of Add Student
 
         //Start of Update Student
-        update_batch: function (id, batch_name , batch_type, callBack) {
+        update_trainer: function (id, trainer_name , trainer_expertise , contact_no, callBack) {
             try {
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
-                    db.db().collection(dbb.BATCH).updateOne({ "_id": new ObjectID(id) }, {
+                    db.db().collection(dbb.USERS).updateOne({ "_id": new ObjectID(id) }, {
                         $set: {
-                            batch_name: batch_name,
-                            batch_type: batch_type,
-                            // contact_no: contact_no,
-                            // education: education,
+                            trainer_name: trainer_name,
+                            // batch_type: batch_type,
+                            contact_no: contact_no,
+                            trainer_expertise: trainer_expertise,
                             // college_name: college_name,
                             // degree: degree,
                             // branch: branch,
@@ -113,26 +113,26 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
         //End of Update Student
 
         //Start of View all Students
-        view_all_batch: function (callBack) {
+        view_all_trainer: function (callBack) {
             try {
-                batch = [];
+                trainer = [];
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
-                    var cursor = db.db().collection(dbb.BATCH).find();
+                    var cursor = db.db().collection(dbb.USERS).find();
                     cursor.forEach(function (doc, err) {
                         if (err) {
                             callBack(null, true, err);
                             db.close();
                         }
                         else {
-                            batch.push(doc);
+                            trainer.push(doc);
                         }
                     }, function () {
-                        if (batch.length == 0) {
+                        if (trainer.length == 0) {
                             callBack(null, true, "No Batch's Found");
                         }
                         else {
-                            callBack(batch, false, "Batch Found");
+                            callBack(trainer, false, "Batch Found");
                         }
                         db.close();
                     })
@@ -178,11 +178,11 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
 
         //Start of Delete Student
 
-        delete_batch: function (id, callBack) {
+        delete_trainer: function (id, callBack) {
             try {
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
-                    db.db().collection(dbb.BATCH).updateOne({ "_id": new ObjectID(id) }, {
+                    db.db().collection(dbb.USERS).updateOne({ "_id": new ObjectID(id) }, {
                         $set: {
                             active: false,
                             deletion_date: new Date(),
@@ -655,5 +655,5 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
         //End of edit profile
 
     }
-    return batch_module;
+    return trainer_module;
 }
