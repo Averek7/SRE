@@ -64,10 +64,10 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                     assert.equal(null, err);
                     db.db().collection(dbb.USER).insertOne(new_student, function (err, result) {
                         if (err) {
-                            callBack(null, true, "Error Occurred");
+                            callBack(null, false, "Error Occurred");
                         }
                         else {
-                            callBack(result, false, "Student Added Successfully");
+                            callBack(result, true, "Student Added Successfully");
                         }
                         db.close();
                     })
@@ -99,9 +99,9 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                         }
                     }, { upsert: false }, function (err, result) {
                         if (err) {
-                            callBack(null, true, err);
+                            callBack(null, false, err);
                         } else {
-                            callBack(result, false, "Updated Successfully");
+                            callBack(result, true, "Updated Successfully");
                         }
                         db.close();
                     });
@@ -121,7 +121,7 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                     var cursor = db.db().collection(dbb.USER).find();
                     cursor.forEach(function (doc, err) {
                         if (err) {
-                            callBack(null, true, err);
+                            callBack(null, false, err);
                             db.close();
                         }
                         else {
@@ -129,10 +129,10 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                         }
                     }, function () {
                         if (students.length == 0) {
-                            callBack(null, true, "No Student's Found");
+                            callBack(null, false, "No Student's Found");
                         }
                         else {
-                            callBack(students, false, "Students Found");
+                            callBack(students, true, "Students Found");
                         }
                         db.close();
                     })
