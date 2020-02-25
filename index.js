@@ -11,6 +11,7 @@ var ObjectID = require('mongodb').ObjectID;
 var studentroute = require('./routes/student_routes');
 var batchroute = require('./routes/batch_routes');
 var trainerroute = require('./routes/trainer_routes');
+var batchtyperoute = require('./routes/batchtype_routes')
 
 
 var dbb = require('./configuration/collection');
@@ -40,6 +41,7 @@ if (prod) {
 }
 
 //Configuring Routes
+batchtyperoute.configure(app,mongo,ObjectID,url,assert,dbb);
 studentroute.configure(app, mongo, ObjectID, url, assert, dbb);
 // adminroute.configure(app, mongo, ObjectID, url, assert, dbb);
 // domainroute.configure(app, mongo, ObjectID, url, assert, dbb);

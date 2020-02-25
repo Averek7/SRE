@@ -8,11 +8,10 @@ module.exports = {
 
         app.post('/login', function (req, res) {
             try {
-                if (req.body.hasOwnProperty("name") && req.body.hasOwnProperty("email") && req.body.hasOwnProperty("user_token") && req.body.hasOwnProperty("device")
-                    && req.body.hasOwnProperty("profile_img_url")) {
+                if (req.body.hasOwnProperty("password") && req.body.hasOwnProperty("email")) {
                     student_module.validate_uuid(req.body.device_uuid, req.body.email, function (exists, message, type) {
                         if (exists) {
-                            student_module.update_token(req.body.email, req.body.user_token, req.body.profile_img_url, function (result, error, message) {
+                            student_module.update_token(req.body.email, req.body.password, function (result, error, message) {
                                 if (error) {
                                     res.json({ status: false, message: message });
                                 }
@@ -100,6 +99,7 @@ module.exports = {
                                     additional_info: req.body.additional_info,
                                     uuid: [],
                                     user_token: user_token,
+                                    password: 'Pass1234',
                                     type: 'S',
                                     active: true
                                 };
@@ -220,34 +220,23 @@ module.exports = {
 
         app.post('/view_all_students', function (req, res) {
             try {
-                if (req.body.hasOwnProperty("user_token")) {
-                    admin_module.userExists(req.body.user_token, function (result, exists, message) {
-                        if (exists && (result == 'A')) {
-                            student_module.view_all_students(function (result, error, message) {
-                                if (error) {
-                                    res.json({ status: false, message: message });
-                                }
-                                else {
-                                    res.json({ status: true, message: message, result: result });
-                                }
-                            })
-                        }
-                        else {
-                            res.json({ status: false, message: message });
-                        }
-                    })
-                }
-                else {
-                    if (req.body.hasOwnProperty("user_token") == false) {
-                        res.json({ status: false, Message: "user_token parameter missing" });
+                student_module.view_all_students(function (result, error, message) {
+                    if (error) {
+                        res.json({ status: false, message: message });
                     }
-                }
+                    else {
+                        res.json({ status: true, message: message, result: result });
+                    }
+                })
             }
-            catch (er) {
-                console.log("error occured : " + er);
-                res.json({ status: false, Message: er });
-            }
-        });
+               
+    
+               
+            catch(er) {
+        console.log("error occured : " + er);
+        res.json({ status: false, Message: er });
+    }
+});
 
     }
 }
