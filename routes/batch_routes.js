@@ -75,6 +75,31 @@ module.exports = {
         // });
 
 
+        app.post('/delete_batch', function (req, res) {
+            try {
+                if (req.body.hasOwnProperty("batch_id")) {
+                    batch_module.delete_batch(req.body.batch_id, function (result, error, message) {
+                        if (error) {
+                            res.json({ status: false, message: message });
+                        }
+                        else {
+                            res.json({ status: true, message: message, result: req.body.batch_id });
+                        }
+                    })
+                }
+                else {
+                    if (req.body.hasOwnProperty("batch_id") == false) {
+                        res.json({ status: false, message: "batch_id parameter is missing" });
+                    }
+                }
+            } catch (er) {
+                console.log("error occured : " + er);
+                res.json({ status: false, Message: "failed at try" });
+            }
+        });
+
+
+
         app.post('/add_batch', function (req, res) {
             try {
                 if (req.body.hasOwnProperty("batch_name") && req.body.hasOwnProperty("batch_type")) {

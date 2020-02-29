@@ -4,83 +4,11 @@ var jwt = require('jsonwebtoken');
 module.exports = {
     configure: function (app, mongo, ObjectID, url, assert, dbb) {
         var batchtype_module = require('../component/batchtype_component')(mongo, ObjectID, url, assert, dbb);
-        // var admin_module = require('../../component/admin_module')(mongo, ObjectID, url, assert, dbb);
-
-        // app.post('/login', function (req, res) {
-        //     try {
-        //         if (req.body.hasOwnProperty("name") && req.body.hasOwnProperty("email") && req.body.hasOwnProperty("user_token") && req.body.hasOwnProperty("device")
-        //             && req.body.hasOwnProperty("profile_img_url")) {
-        //             student_module.validate_uuid(req.body.device_uuid, req.body.email, function (exists, message, type) {
-        //                 if (exists) {
-        //                     student_module.update_token(req.body.email, req.body.user_token, req.body.profile_img_url, function (result, error, message) {
-        //                         if (error) {
-        //                             res.json({ status: false, message: message });
-        //                         }
-        //                         else {
-        //                             res.json({ status: true, message: message, result: type });
-        //                         }
-        //                     })
-        //                 }
-        //                 else {
-        //                     var new_student = {
-        //                         name: req.body.name,
-        //                         email: req.body.email,
-        //                         contact_no: '',
-        //                         education: '',
-        //                         college_name: '',
-        //                         degree: '',
-        //                         branch: '',
-        //                         interested_area: '',
-        //                         additional_info: '',
-        //                         // user_token: req.body.user_token,
-        //                         device: [req.body.device],
-        //                         profile_img_url: req.body.profile_img_url,
-        //                         type: 'S',
-        //                         domains: [],
-        //                         batches: [],
-        //                         forums: [],
-        //                         get_notifications: true,
-        //                         active: true
-        //                     }
-        //                     student_module.add_student(new_student, function (result, error, message) {
-        //                         if (error) {
-        //                             res.json({ status: false, message: message });
-        //                         }
-        //                         else {
-        //                             res.json({ status: true, message: message, result: req.body.user_token })
-        //                         }
-        //                     })
-        //                 }
-        //             })
-        //         }
-        //         else {
-        //             if (req.body.hasOwnProperty("email") == false) {
-        //                 res.json({ status: false, message: "email parameter is missing" });
-        //             } else if (req.body.hasOwnProperty("name") == false) {
-        //                 res.json({ status: false, message: "name parameter is missing" });
-        //             }
-        //             else if (req.body.hasOwnProperty("user_token") == false) {
-        //                 res.json({ status: false, message: "user_token parameter is missing" });
-        //             }
-        //             else if (req.body.hasOwnProperty("device") == false) {
-        //                 res.json({ status: false, message: "device parameter is missing" });
-        //             }
-        //             else if (req.body.hasOwnProperty("profile_img_url") == false) {
-        //                 res.json({ status: false, message: "profile_img_url parameter is missing" });
-        //             }
-        //         }
-        //     } catch (er) {
-        //         console.log("error occures: " + er);
-        //         res.json({ status: false, message: "failed at try block...!" });
-        //     }
-        // });
-
-
         app.post('/add_batchtype', function (req, res) {
             try {
                 if (req.body.hasOwnProperty("batchtype_name") && req.body.hasOwnProperty("duration")) {
                     var user = {};
-                    jwt.sign({ user }, 'secretkey', (err, user_token) => {
+                    // jwt.sign({ user }, 'secretkey', (err, user_token) => {
                         batchtype_module.batchtype_exists(req.body.batchtype_name, function (result, exists, message) {
                             if (exists) {
                                 res.json({ status: false, message: message, user_token: result });
@@ -102,7 +30,7 @@ module.exports = {
                                 })
                             }
                         })
-                    });
+                    // });
                 }
                 else {
                     if (req.body.hasOwnProperty("batchtype_name") == false) {
@@ -169,6 +97,28 @@ module.exports = {
                         res.json({ status: false, message: "duration parameter is missing" });
                     }
 
+                }
+            } catch (er) {
+                console.log("error occured : " + err);
+                res.json({ status: false, Message: "failed at try" });
+            }
+        });
+        app.post('/delete_batch_type', function (req, res) {
+            try {
+                if (req.body.hasOwnProperty("batchtype_id")) {
+                    batchtype_module.delete_batchtype(req.body.batchtype_id, function (result, error, message) {
+                        if (error) {
+                            res.json({ status: false, message: message });
+                        }
+                        else {
+                            res.json({ status: true, message: message, result: req.body.batchtype_id });
+                        }
+                    })
+                }
+                else {
+                    if (req.body.hasOwnProperty("batchtype_id") == false) {
+                        res.json({ status: false, message: "id parameter is missing" });
+                    }
                 }
             } catch (er) {
                 console.log("error occured : " + er);

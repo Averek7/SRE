@@ -4,49 +4,51 @@ var jwt = require('jsonwebtoken');
 module.exports = {
     configure: function (app, mongo, ObjectID, url, assert, dbb) {
         var student_module = require('../component/student_component')(mongo, ObjectID, url, assert, dbb);
+        var batch_module = require('../component/batch_component')(mongo, ObjectID, url, assert, dbb);
+
         // var admin_module = require('../../component/admin_module')(mongo, ObjectID, url, assert, dbb);
 
-        app.post('/login', function (req, res) {
+        app.post('/login_email', function (req, res) {
             try {
                 if (req.body.hasOwnProperty("password") && req.body.hasOwnProperty("email")) {
-                    student_module.validate_uuid(req.body.device_uuid, req.body.email, function (exists, message, type) {
+                    student_module.student_login(req.body.password, req.body.email, function (result, exists, message) {
+
                         if (exists) {
-                            student_module.update_token(req.body.email, req.body.password, function (result, error, message) {
-                                if (error) {
-                                    res.json({ status: false, message: message });
-                                }
-                                else {
-                                    res.json({ status: true, message: message, result: type });
-                                }
-                            })
+                            res.json({ status: true, message: message, result: result });
                         }
                         else {
-                            var new_student = {
-                                name: req.body.name,
-                                email: req.body.email,
-                                contact_no: '',
-                                education: '',
-                                college_name: '',
-                                degree: '',
-                                branch: '',
-                                interested_area: '',
-                                additional_info: '',
-                                // user_token: req.body.user_token,
-                                device: [req.body.device],
-                                profile_img_url: req.body.profile_img_url,
-                                type: 'S',
-                                domains: [],
-                                batches: [],
-                                forums: [],
-                                get_notifications: true,
-                                active: true
-                            }
-                            student_module.add_student(new_student, function (result, error, message) {
-                                if (error) {
-                                    res.json({ status: false, message: message });
+                            res.json({ status: false, message: message });
+                        }
+                    })
+                }
+                else {
+                    if (req.body.hasOwnProperty("email") == false) {
+                        res.json({ status: false, message: "email parameter is missing" });
+                    } else if (req.body.hasOwnProperty("password") == false) {
+                        res.json({ status: false, message: "Enter Your Password" });
+                    }
+                }
+            } catch (er) {
+                console.log("error occures: " + er);
+                res.json({ status: false, message: "failed at try block...!" });
+            }
+        });
+
+
+        app.post('/login_social', function (req, res) {
+            try {
+                if (req.body.hasOwnProperty("email")) {
+                    student_module.student_social(req.body.email, function (result, exists, message) {
+                        if (exists) {
+                            res.json({ status: true, message: message, result: result });
+                        }
+                        else {
+                            student_module.add_student({ email: req.body.email, password: "Pass1234", type: "S", profilepic: req.body.profilepic }, function (result, status, msg) {
+                                if (status) {
+                                    res.json({ status: true, message: message, result: result });
                                 }
                                 else {
-                                    res.json({ status: true, message: message, result: req.body.user_token })
+                                    res.json({ status: flase, message: message });
                                 }
                             })
                         }
@@ -55,17 +57,6 @@ module.exports = {
                 else {
                     if (req.body.hasOwnProperty("email") == false) {
                         res.json({ status: false, message: "email parameter is missing" });
-                    } else if (req.body.hasOwnProperty("name") == false) {
-                        res.json({ status: false, message: "name parameter is missing" });
-                    }
-                    else if (req.body.hasOwnProperty("user_token") == false) {
-                        res.json({ status: false, message: "user_token parameter is missing" });
-                    }
-                    else if (req.body.hasOwnProperty("device") == false) {
-                        res.json({ status: false, message: "device parameter is missing" });
-                    }
-                    else if (req.body.hasOwnProperty("profile_img_url") == false) {
-                        res.json({ status: false, message: "profile_img_url parameter is missing" });
                     }
                 }
             } catch (er) {
@@ -84,7 +75,7 @@ module.exports = {
                     jwt.sign({ user }, 'secretkey', (err, user_token) => {
                         student_module.student_exists(req.body.email, function (result, exists, message) {
                             if (exists) {
-                                res.json({ status: false, message: message, user_token: result });
+                                res.json({ status: true, message: message, user_token: result });
                             }
                             else {
                                 var new_student = {
@@ -210,6 +201,61 @@ module.exports = {
             }
         });
 
+        app.post('/delete_student', function (req, res) {
+            try {
+                if (req.body.hasOwnProperty("student_id")) {
+                    student_module.delete_student(req.body.student_id, function (result, error, message) {
+                        if (error) {
+                            res.json({ status: false, message: message });
+                        }
+                        else {
+                            res.json({ status: true, message: message, result: req.body.student_id });
+                        }
+                    })
+                }
+                else {
+                    if (req.body.hasOwnProperty("id") == false) {
+                        res.json({ status: false, message: "id parameter is missing" });
+                    }
+                    else if (req.body.hasOwnProperty("user_token") == false) {
+                        res.json({ status: false, message: "user_token parameter is missing" });
+                    }
+                }
+            } catch (er) {
+                console.log("error occured : " + er);
+                res.json({ status: false, Message: "failed at try" });
+            }
+        });
+
+        
+        app.post('/view_batch_students',function(req,res){
+            try{
+                if(req.body.hasOwnProperty("batch_id")){
+                    student_module.view_batch_student(req.body.batch_id,function(result,error,message){
+                        if(error){
+                            res.json({status:false,message:message});
+                        }
+                        else{
+                            res.json({status:true,message:message,result:result});
+                        }
+                    })
+                }
+                else{
+
+                }
+            }
+            catch(er){
+                confirm.log("Error Occured: "+er);
+                res.json({status:false,message:"failed at try"})
+            }
+        });
+
+        // app.post('/take_attendance',function(req,res){
+        //     try{
+        //         if(req.body.)
+        //     }
+        // })
+
         //End of Update Student
 
 
@@ -229,14 +275,14 @@ module.exports = {
                     }
                 })
             }
-               
-    
-               
-            catch(er) {
-        console.log("error occured : " + er);
-        res.json({ status: false, Message: er });
-    }
-});
+
+
+
+            catch (er) {
+                console.log("error occured : " + er);
+                res.json({ status: false, Message: er });
+            }
+        });
 
     }
 }

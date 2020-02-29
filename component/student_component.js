@@ -2,6 +2,62 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
     var student_module = {
 
         //Start of Student Exists
+        student_login: function (password, email, callBack) {
+            try {
+                exists = false;
+                // user_token = false;
+                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
+                    assert.equal(null, err);
+                    var cursor = db.db().collection(dbb.USER).find({ "email": email });
+                    cursor.forEach(function (doc, err) {
+                        if (doc.password === password) {
+                            value = doc;
+                            exists = true;
+                        }
+                    }, function () {
+
+                        if (exists) {
+                            callBack(value, true, "Login Successful");
+                        }
+                        else {
+                            callBack(exists, false, "Invalid Credential");
+                        }
+                        db.close();
+                    })
+                })
+            } catch (e) {
+                callBack(null, true, e);
+            }
+        },
+
+
+        delete_student: function (id, callBack) {
+            try {
+                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
+                    assert.equal(null, err);
+                    db.db().collection(dbb.USER).deleteOne({
+                        "_id": new ObjectID(id), function(err, result) {
+                            if (err) {
+                                callBack(null, true, "Error Occurred");
+                            }
+                            else {
+                                callBack(result, false, "Student Removed Successfully");
+                            }
+                            db.close();
+                        }
+                    })
+
+                })
+            } catch (e) {
+                callBack(null, true, e);
+            }
+        },
+
+
+        //End of Student Exists
+
+        //start of student login
+
         student_exists: function (email, callBack) {
             try {
                 exists = false;
@@ -28,8 +84,32 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
             }
         },
 
-        //End of Student Exists
 
+        student_social: function (email, callBack) {
+            try {
+                exists = false;
+                value = false;
+                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
+                    assert.equal(null, err);
+                    var cursor = db.db().collection(dbb.USER).find({ "email": email });
+                    cursor.forEach(function (doc, err) {
+                        assert.equal(null, err);
+                        exists = true;
+                        value = doc;
+                    }, function () {
+                        if (exists) {
+                            callBack(value, true, "Login Successful");
+                        }
+                        else {
+                            callBack(exists, false);
+                        }
+                        db.close();
+                    })
+                })
+            } catch (e) {
+                callBack(null, true, e);
+            }
+        },
         // //Start of User Exists
         // userExists: function(user_token, callBack) {
         //   try {
@@ -118,10 +198,10 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                 students = [];
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
-                    var cursor = db.db().collection(dbb.USER).find();
+                    var cursor = db.db().collection(dbb.USER).find({ "type": "S" });
                     cursor.forEach(function (doc, err) {
                         if (err) {
-                            callBack(null, false, err);
+                            callBack(null, true, err);
                             db.close();
                         }
                         else {
@@ -129,10 +209,40 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                         }
                     }, function () {
                         if (students.length == 0) {
-                            callBack(null, false, "No Student's Found");
+                            callBack(null, true, "No Student's Found");
                         }
                         else {
-                            callBack(students, true, "Students Found");
+                            callBack(students, false, "Students Found");
+                        }
+                        db.close();
+                    })
+                })
+            } catch (e) {
+                callBack(null, true, e);
+            }
+        },
+
+
+        view_batch_student: function (batch_id,callBack) {
+            try {
+                students = [];
+                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
+                    assert.equal(null, err);
+                    var cursor = db.db().collection(dbb.USER).find({ "batch": batch_id });
+                    cursor.forEach(function (doc, err) {
+                        if (err) {
+                            callBack(null, true, err);
+                            db.close();
+                        }
+                        else {
+                            students.push(doc);
+                        }
+                    }, function () {
+                        if (students.length == 0) {
+                            callBack(null, true, "No Student's Found In This Batch");
+                        }
+                        else {
+                            callBack(students, false, "Students Found");
                         }
                         db.close();
                     })
@@ -178,28 +288,6 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
 
         //Start of Delete Student
 
-        delete_student: function (id, callBack) {
-            try {
-                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
-                    assert.equal(null, err);
-                    db.db().collection(dbb.USER).updateOne({ "_id": new ObjectID(id) }, {
-                        $set: {
-                            active: false,
-                            deletion_date: new Date(),
-                        }
-                    }, { upsert: false }, function (err, result) {
-                        if (err) {
-                            callBack(null, true, err);
-                        } else {
-                            callBack(result, false, "Deleted Successfully");
-                        }
-                        db.close();
-                    });
-                });
-            } catch (e) {
-                callBack(null, true, e);
-            }
-        },
 
         //End of Delete Student
 

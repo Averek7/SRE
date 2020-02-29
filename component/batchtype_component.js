@@ -104,6 +104,27 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                 callBack(null, true, e);
             }
         },
+
+        delete_batchtype: function (id, callBack) {
+            try {
+                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
+                    assert.equal(null, err);
+                    db.db().collection(dbb.BATCHTYPE).deleteOne({
+                        "_id": new ObjectID(id), function(err, result) {
+                            if (err) {
+                                callBack(null, true, "Error Occurred");
+                            }
+                            else {
+                                callBack(result, false, "Trainer Removed Successfully");
+                            }
+                            db.close();
+                        }
+                    })
+                })
+            } catch (e) {
+                callBack(null, true, e);
+            }
+        },
         //End of Update batchtype
 
         //Start of View all batchtype
@@ -171,29 +192,6 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
         //End of Search batchtype
 
         //Start of Delete batchtype
-
-        delete_batchtype: function (id, callBack) {
-            try {
-                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
-                    assert.equal(null, err);
-                    db.db().collection(dbb.BATCHTYPE).updateOne({ "_id": new ObjectID(id) }, {
-                        $set: {
-                            active: false,
-                            deletion_date: new Date(),
-                        }
-                    }, { upsert: false }, function (err, result) {
-                        if (err) {
-                            callBack(null, true, err);
-                        } else {
-                            callBack(result, false, "Deleted Successfully");
-                        }
-                        db.close();
-                    });
-                });
-            } catch (e) {
-                callBack(null, true, e);
-            }
-        },
 
         //End of Delete Student
 

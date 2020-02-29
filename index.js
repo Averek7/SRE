@@ -17,7 +17,7 @@ var batchtyperoute = require('./routes/batchtype_routes')
 var dbb = require('./configuration/collection');
 
 //Configuring Port
-app.set('port', (process.env.PORT || 4000));
+app.set('port', (process.env.PORT || 8000));
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

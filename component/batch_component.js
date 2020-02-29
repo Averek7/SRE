@@ -142,6 +142,28 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
             }
         },
 
+        delete_batch: function (id, callBack) {
+            try {
+                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
+                    assert.equal(null, err);
+                    db.db().collection(dbb.BATCH).deleteOne({
+                        "_id": new ObjectID(id), function(err, result) {
+                            if (err) {
+                                callBack(null, true, "Error Occurred");
+                            }
+                            else {
+                                callBack(result, false, "Batch Removed Successfully");
+                            }
+                            db.close();
+                        }
+                    })
+
+                })
+            } catch (e) {
+                callBack(null, true, e);
+            }
+        }
+
         //End of View all Students
 
         //Start of Search Student
@@ -178,30 +200,6 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
 
         //Start of Delete Student
 
-        delete_batch: function (id, callBack) {
-            try {
-                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
-                    assert.equal(null, err);
-                    db.db().collection(dbb.BATCH).updateOne({ "_id": new ObjectID(id) }, {
-                        $set: {
-                            active: false,
-                            deletion_date: new Date(),
-                        }
-                    }, { upsert: false }, function (err, result) {
-                        if (err) {
-                            callBack(null, true, err);
-                        } else {
-                            callBack(result, false, "Deleted Successfully");
-                        }
-                        db.close();
-                    });
-                });
-            } catch (e) {
-                callBack(null, true, e);
-            }
-        },
-
-        //End of Delete Student
 
 
         //Start of Register Domain

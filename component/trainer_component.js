@@ -8,17 +8,17 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                 user_token = false;
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
-                    var cursor = db.db().collection(dbb.USERS).find({ "trainer_name": trainer_name });
+                    var cursor = db.db().collection(dbb.USER).find({ "trainer_name": trainer_name });
                     cursor.forEach(function (doc, err) {
                         assert.equal(null, err);
                         exists = true;
                         user_token = doc.user_token;
                     }, function () {
                         if (exists) {
-                            callBack(user_token, true, "Trainer Already Exists!");
+                            callBack(user_token, false, "Trainer Already Exists!");
                         }
                         else {
-                            callBack(exists, false, "");
+                            callBack(exists, true, "");
                         }
                         db.close();
                     })
@@ -62,7 +62,7 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
             try {
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
-                    db.db().collection(dbb.USERS).insertOne(new_trainer, function (err, result) {
+                    db.db().collection(dbb.USER).insertOne(new_trainer, function (err, result) {
                         if (err) {
                             callBack(null, true, "Error Occurred");
                         }
@@ -77,6 +77,27 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
             }
         },
 
+        delete_trainer: function (id, callBack) {
+            try {
+                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
+                    assert.equal(null, err);
+                    db.db().collection(dbb.USER).deleteOne({
+                        "_id": new ObjectID(id), function(err, result) {
+                            if (err) {
+                                callBack(null, true, "Error Occurred");
+                            }
+                            else {
+                                callBack(result, false, "Trainer Removed Successfully");
+                            }
+                            db.close();
+                        }
+                    })
+
+                })
+            } catch (e) {
+                callBack(null, true, e);
+            }
+        },
         //End of Add Student
 
         //Start of Update Student
@@ -118,7 +139,7 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                 trainer = [];
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
-                    var cursor = db.db().collection(dbb.USERS).find();
+                    var cursor = db.db().collection(dbb.USER).find({"type": "T" });
                     cursor.forEach(function (doc, err) {
                         if (err) {
                             callBack(null, true, err);
@@ -129,10 +150,10 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                         }
                     }, function () {
                         if (trainer.length == 0) {
-                            callBack(null, true, "No Batch's Found");
+                            callBack(null, true, "No trainer's Found");
                         }
                         else {
-                            callBack(trainer, false, "Batch Found");
+                            callBack(trainer, false, "trainer Found");
                         }
                         db.close();
                     })
@@ -177,29 +198,6 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
         //End of Search Student
 
         //Start of Delete Student
-
-        delete_trainer: function (id, callBack) {
-            try {
-                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
-                    assert.equal(null, err);
-                    db.db().collection(dbb.USERS).updateOne({ "_id": new ObjectID(id) }, {
-                        $set: {
-                            active: false,
-                            deletion_date: new Date(),
-                        }
-                    }, { upsert: false }, function (err, result) {
-                        if (err) {
-                            callBack(null, true, err);
-                        } else {
-                            callBack(result, false, "Deleted Successfully");
-                        }
-                        db.close();
-                    });
-                });
-            } catch (e) {
-                callBack(null, true, e);
-            }
-        },
 
         //End of Delete Student
 

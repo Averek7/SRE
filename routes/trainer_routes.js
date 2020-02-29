@@ -77,12 +77,12 @@ module.exports = {
 
         app.post('/add_trainer', function (req, res) {
             try {
-                if (req.body.hasOwnProperty("trainer_name") && req.body.hasOwnProperty("trainer_expertise")) {
+                if (req.body.hasOwnProperty("trainer_name") && req.body.hasOwnProperty("trainer_expertise") && req.body.hasOwnProperty("contact_no")) {
                     var user = {};
                     jwt.sign({ user }, 'secretkey', (err, user_token) => {
                         trainer_module.trainer_exists(req.body.trainer_name, function (result, exists, message) {
                             if (exists) {
-                                res.json({ status: false, message: message, user_token: result });
+                                res.json({ status: true, message: message, user_token: result });
                             }
                             else {
                                 var new_trainer = {
@@ -140,6 +140,31 @@ module.exports = {
                     // else if (req.body.hasOwnProperty("additional_info") == false) {
                     //     res.json({ status: false, message: "additional_info parameter is missing" });
                     // }
+                }
+            } catch (er) {
+                console.log("error occured : " + er);
+                res.json({ status: false, Message: "failed at try" });
+            }
+        });
+        app.post('/delete_trainer', function (req, res) {
+            try {
+                if (req.body.hasOwnProperty("student_id")) {
+                    trainer_module.delete_trainer(req.body.student_id, function (result, error, message) {
+                        if (error) {
+                            res.json({ status: false, message: message });
+                        }
+                        else {
+                            res.json({ status: true, message: message, result: req.body.student_id });
+                        }
+                    })
+                }
+                else {
+                    if (req.body.hasOwnProperty("id") == false) {
+                        res.json({ status: false, message: "id parameter is missing" });
+                    }
+                    else if (req.body.hasOwnProperty("user_token") == false) {
+                        res.json({ status: false, message: "user_token parameter is missing" });
+                    }
                 }
             } catch (er) {
                 console.log("error occured : " + er);
@@ -214,7 +239,6 @@ module.exports = {
 
         app.post('/view_all_trainer', function (req, res) {
             try {
-
                 trainer_module.view_all_trainer(function (result, error, message) {
                     if (error) {
                         res.json({ status: false, message: message });
@@ -223,8 +247,6 @@ module.exports = {
                         res.json({ status: true, message: message, result: result });
                     }
                 })
-
-
             }
             // else {
             //     if (req.body.hasOwnProperty("user_token") == false) {
