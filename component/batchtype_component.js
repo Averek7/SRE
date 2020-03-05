@@ -2,13 +2,13 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
     var batchtype_module = {
 
         //Start of batch Exists
-        batchtype_exists: function (batchtype_name, callBack) {
+        batchtype_exists: function (batch_type_name, callBack) {
             try {
                 exists = false;
                 user_token = false;
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
-                    var cursor = db.db().collection(dbb.BATCHTYPE).find({ "batchtype_name": batchtype_name });
+                    var cursor = db.db().collection(dbb.BATCHTYPE).find({ "batch_type_name": batch_type_name });
                     cursor.forEach(function (doc, err) {
                         assert.equal(null, err);
                         exists = true;
@@ -67,7 +67,7 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                             callBack(null, false, "Error Occurred");
                         }
                         else {
-                            callBack(result, true, "Batchtype Added Successfully");
+                            callBack(result, true, "Batch Type Added Successfully");
                         }
                         db.close();
                     })

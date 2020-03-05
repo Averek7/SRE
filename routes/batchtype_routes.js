@@ -4,19 +4,19 @@ var jwt = require('jsonwebtoken');
 module.exports = {
     configure: function (app, mongo, ObjectID, url, assert, dbb) {
         var batchtype_module = require('../component/batchtype_component')(mongo, ObjectID, url, assert, dbb);
-        app.post('/add_batchtype', function (req, res) {
+        app.post('/add_batch_type', function (req, res) {
             try {
-                if (req.body.hasOwnProperty("batchtype_name") && req.body.hasOwnProperty("duration")) {
+                if (req.body.hasOwnProperty("batch_type_name") && req.body.hasOwnProperty("batch_type_duration")) {
                     var user = {};
                     // jwt.sign({ user }, 'secretkey', (err, user_token) => {
-                        batchtype_module.batchtype_exists(req.body.batchtype_name, function (result, exists, message) {
+                        batchtype_module.batchtype_exists(req.body.batch_type_name, function (result, exists, message) {
                             if (exists) {
                                 res.json({ status: false, message: message, user_token: result });
                             }
                             else {
                                 var new_batchtype = {
-                                    batchtype_name: req.body.batchtype_name,
-                                    duration: req.body.duration,
+                                    batch_type_name: req.body.batch_type_name,
+                                    batch_type_duration: req.body.batch_type_duration,
 
 
                                 };
@@ -33,10 +33,10 @@ module.exports = {
                     // });
                 }
                 else {
-                    if (req.body.hasOwnProperty("batchtype_name") == false) {
+                    if (req.body.hasOwnProperty("batch_type_name") == false) {
                         res.json({ status: false, message: "Batchtype name parameter is missing" });
                     }
-                    else if (req.body.hasOwnProperty("duration") == false) {
+                    else if (req.body.hasOwnProperty("batch_type_duration") == false) {
                         res.json({ status: false, message: "duration parameter is missing" });
                     }
                     // else if (req.body.hasOwnProperty("contact_no") == false) {
