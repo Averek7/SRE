@@ -15,10 +15,10 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                         user_token = doc.user_token;
                     }, function () {
                         if (exists) {
-                            callBack(user_token, false, "Trainer Already Exists!");
+                            callBack(user_token, true, "Trainer Already Exists!");
                         }
                         else {
-                            callBack(exists, true, "");
+                            callBack(exists, false, "");
                         }
                         db.close();
                     })
@@ -67,7 +67,7 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                             callBack(null, true, "Error Occurred");
                         }
                         else {
-                            callBack(result, false, "Trainer Added Successfully");
+                            callBack(null, false, "Trainer Added Successfully");
                         }
                         db.close();
                     })

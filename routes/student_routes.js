@@ -68,9 +68,8 @@ module.exports = {
 
         app.post('/add_student', function (req, res) {
             try {
-                if (req.body.hasOwnProperty("name") && req.body.hasOwnProperty("email") && req.body.hasOwnProperty("contact_no") &&
-                    req.body.hasOwnProperty("education") && req.body.hasOwnProperty("college_name") && req.body.hasOwnProperty("degree") &&
-                    req.body.hasOwnProperty("branch") && req.body.hasOwnProperty("interested_area") && req.body.hasOwnProperty("additional_info")) {
+                if (req.body.hasOwnProperty("student_name") && req.body.hasOwnProperty("email") && req.body.hasOwnProperty("student_age") && req.body.hasOwnProperty("institute_name") && req.body.hasOwnProperty("education") &&
+                    req.body.hasOwnProperty("phone_no") && req.body.hasOwnProperty("batch") && req.body.hasOwnProperty("advance_amount") && req.body.hasOwnProperty("batch_type") && req.body.hasOwnProperty("father_name") && req.body.hasOwnProperty("roll_no") && req.body.hasOwnProperty("father_occupation")) {
                     var user = {};
                     jwt.sign({ user }, 'secretkey', (err, user_token) => {
                         student_module.student_exists(req.body.email, function (result, exists, message) {
@@ -79,16 +78,18 @@ module.exports = {
                             }
                             else {
                                 var new_student = {
-                                    name: req.body.name,
+                                    student_name: req.body.student_name,
+                                    student_image:req.body.student_image,
                                     email: req.body.email,
-                                    contact_no: req.body.contact_no,
+                                    student_age: req.body.student_age,
+                                    institute_name: req.body.institute_name,
                                     education: req.body.education,
-                                    college_name: req.body.college_name,
-                                    degree: req.body.degree,
-                                    branch: req.body.branch,
-                                    interested_area: req.body.interested_area,
-                                    additional_info: req.body.additional_info,
-                                    uuid: [],
+                                    phone_no: req.body.phone_no,
+                                    batch: [{batch:req.body.batch,batch_type:req.body.batch_type}],
+                                    amount:[{comment:"Advance",amount:req.body.advance_amount}],
+                                    father_name: req.body.father_name,
+                                    roll_no: req.body.roll_no,
+                                    father_occupation: req.body.father_occupation,
                                     user_token: user_token,
                                     password: 'Pass1234',
                                     type: 'S',
@@ -227,26 +228,26 @@ module.exports = {
             }
         });
 
-        
-        app.post('/view_batch_students',function(req,res){
-            try{
-                if(req.body.hasOwnProperty("batch_id")){
-                    student_module.view_batch_student(req.body.batch_id,function(result,error,message){
-                        if(error){
-                            res.json({status:false,message:message});
+
+        app.post('/view_batch_students', function (req, res) {
+            try {
+                if (req.body.hasOwnProperty("batch_id")) {
+                    student_module.view_batch_student(req.body.batch_id, function (result, error, message) {
+                        if (error) {
+                            res.json({ status: false, message: message });
                         }
-                        else{
-                            res.json({status:true,message:message,result:result});
+                        else {
+                            res.json({ status: true, message: message, result: result });
                         }
                     })
                 }
-                else{
+                else {
 
                 }
             }
-            catch(er){
-                confirm.log("Error Occured: "+er);
-                res.json({status:false,message:"failed at try"})
+            catch (er) {
+                confirm.log("Error Occured: " + er);
+                res.json({ status: false, message: "failed at try" })
             }
         });
 

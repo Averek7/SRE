@@ -47,6 +47,7 @@ module.exports = {
                                     batch_type: req.body.batch_type,
                                     batch_price: req.body.batch_price,
                                     batch_trainer: req.body.batch_trainer,
+                                    batch_start_date:req.body.batch_start_date,
                                 };
                                 batch_module.add_batch(new_batch, function (result, error, message) {
                                     if (error) {
@@ -65,13 +66,16 @@ module.exports = {
                         res.json({ status: false, message: "batch name parameter is missing" });
                     }
                     else if (req.body.hasOwnProperty("batch_type") == false) {
-                        res.json({ status: false, message: "batch type parameter is missing" });
+                        res.json({ status: false, message: "batch type parameter is Missing" });
                     }
                     else if (req.body.hasOwnProperty("batch_price") == false) {
-                        res.json({ status: false, message: "batch price parameter is missing" });
+                        res.json({ status: false, message: "batch price parameter is Missing" });
                     }
                     else if (req.body.hasOwnProperty("batch_trainer") == false) {
-                        res.json({ status: false, message: "batch trainer parameter is missing" });
+                        res.json({ status: false, message: "batch trainer parameter is Missing" });
+                    }
+                    else if (req.body.hasOwnProperty("batch_start_date") == false) {
+                        res.json({ status: false, message: "Batch Start Date parameter Is Missing" });
                     }
                 }
             } catch (er) {

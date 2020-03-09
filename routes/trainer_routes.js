@@ -4,80 +4,9 @@ var jwt = require('jsonwebtoken');
 module.exports = {
     configure: function (app, mongo, ObjectID, url, assert, dbb) {
         var trainer_module = require('../component/trainer_component')(mongo, ObjectID, url, assert, dbb);
-        // var admin_module = require('../../component/admin_module')(mongo, ObjectID, url, assert, dbb);
-
-        // app.post('/login', function (req, res) {
-        //     try {
-        //         if (req.body.hasOwnProperty("batch_name") && req.body.hasOwnProperty("batch_type")) {
-        //             batch_module.validate_uuid(req.body.device_uuid, req.body.email, function (exists, message, type) {
-        //                 if (exists) {
-        //                     batch_module.update_token(req.body.batch_name, req.body.batch_type, function (result, error, message) {
-        //                         if (error) {
-        //                             res.json({ status: false, message: message });
-        //                         }
-        //                         else {
-        //                             res.json({ status: true, message: message, result: type });
-        //                         }
-        //                     })
-        //                 }
-        //                 else {
-        //                     var new_student = {
-        //                         batch_name: req.body.batch_name,
-        //                         batch_type: req.body.batch_type,
-        //                         // contact_no: '',
-        //                         // education: '',
-        //                         // college_name: '',
-        //                         // degree: '',
-        //                         // branch: '',
-        //                         // interested_area: '',
-        //                         // additional_info: '',
-        //                         // user_token: req.body.user_token,
-        //                         // device: [req.body.device],
-        //                         // profile_img_url: req.body.profile_img_url,
-        //                         // type: 'S',
-        //                         // domains: [],
-        //                         // batches: [],
-        //                         // forums: [],
-        //                         // get_notifications: true,
-        //                         // active: true
-        //                     }
-        //                     student_module.add_batch(new_batch, function (result, error, message) {
-        //                         if (error) {
-        //                             res.json({ status: false, message: message });
-        //                         }
-        //                         else {
-        //                             res.json({ status: true, message: message, result: req.body.user_token })
-        //                         }
-        //                     })
-        //                 }
-        //             })
-        //         }
-        //         else {
-        //             if (req.body.hasOwnProperty("batch_name") == false) {
-        //                 res.json({ status: false, message: "batch name parameter is missing" });
-        //             } else if (req.body.hasOwnProperty("batch_type") == false) {
-        //                 res.json({ status: false, message: "batch type parameter is missing" });
-        //             }
-        //             // else if (req.body.hasOwnProperty("user_token") == false) {
-        //             //     res.json({ status: false, message: "user_token parameter is missing" });
-        //             // }
-        //             // else if (req.body.hasOwnProperty("device") == false) {
-        //             //     res.json({ status: false, message: "device parameter is missing" });
-        //             // }
-        //             // else if (req.body.hasOwnProperty("profile_img_url") == false) {
-        //             //     res.json({ status: false, message: "profile_img_url parameter is missing" });
-        //             // }
-        //         }
-        //     } catch (er) {
-        //         console.log("error occures: " + er);
-        //         res.json({ status: false, message: "failed at try block...!" });
-        //     }
-        // });
-
-
         app.post('/add_trainer', function (req, res) {
             try {
-                if (req.body.hasOwnProperty("trainer_name") && req.body.hasOwnProperty("trainer_expertise") && req.body.hasOwnProperty("contact_no")) {
+                if (req.body.hasOwnProperty("trainer_name") && req.body.hasOwnProperty("trainer_age") && req.body.hasOwnProperty("trainer_qualification") && req.body.hasOwnProperty("trainer_specialization") && req.body.hasOwnProperty("email") && req.body.hasOwnProperty("phone_no")) {
                     var user = {};
                     jwt.sign({ user }, 'secretkey', (err, user_token) => {
                         trainer_module.trainer_exists(req.body.trainer_name, function (result, exists, message) {
@@ -87,16 +16,13 @@ module.exports = {
                             else {
                                 var new_trainer = {
                                     trainer_name: req.body.trainer_name,
-                                    trainer_expertise: req.body.trainer_expertise,
-                                    contact_no: req.body.contact_no,
-                                    // education: req.body.education,
-                                    // college_name: req.body.college_name,
-                                    // degree: req.body.degree,
-                                    // branch: req.body.branch,
-                                    // interested_area: req.body.interested_area,
-                                    // additional_info: req.body.additional_info,
-                                    // uuid: [],
+                                    trainer_age: req.body.trainer_age,
+                                    trainer_qualiication: req.body.trainer_qualiication,
+                                    trainer_specialization: req.body.trainer_specialization,
+                                    email: req.body.email,
+                                    phone_no: req.body.phone_no,
                                     password:'Pass1234',
+                                    profilepic:req.body.profilepic,
                                     type: 'T',
                                     // active: true
                                 };
@@ -105,7 +31,7 @@ module.exports = {
                                         res.json({ status: false, message: message });
                                     }
                                     else {
-                                        res.json({ status: true, message: message, result: result.insertedId, user_token: user_token });
+                                        res.json({ status: true, message: message });
                                     }
                                 })
                             }
@@ -114,32 +40,23 @@ module.exports = {
                 }
                 else {
                     if (req.body.hasOwnProperty("trainer_name") == false) {
-                        res.json({ status: false, message: "batch name parameter is missing" });
+                        res.json({ status: false, message: "Trainer Name Parameter Is Missing" });
                     }
-                    else if (req.body.hasOwnProperty("trainer_expertise") == false) {
-                        res.json({ status: false, message: "batch type parameter is missing" });
+                    else if (req.body.hasOwnProperty("trainer_age") == false) {
+                        res.json({ status: false, message: "Trainer Name Parameter Is Missing" });
                     }
-                    else if (req.body.hasOwnProperty("contact_no") == false) {
-                        res.json({ status: false, message: "contact_no parameter is missing" });
+                    else if (req.body.hasOwnProperty("trainer_qualification") == false) {
+                        res.json({ status: false, message: "Trainer Qualification Parameter Is Missing" });
                     }
-                    else if (req.body.hasOwnProperty("password") == false) {
-                        res.json({ status: false, message: "password parameter is missing" });
+                    else if (req.body.hasOwnProperty("trainer_specialization") == false) {
+                        res.json({ status: false, message: "Trainer Specialization Parameter Is Missing" });
                     }
-                    // else if (req.body.hasOwnProperty("college_name") == false) {
-                    //     res.json({ status: false, message: "college_name parameter is missing" });
-                    // }
-                    // else if (req.body.hasOwnProperty("degree") == false) {
-                    //     res.json({ status: false, message: "degree parameter is missing" });
-                    // }
-                    // else if (req.body.hasOwnProperty("branch") == false) {
-                    //     res.json({ status: false, message: "branch parameter is missing" });
-                    // }
-                    // else if (req.body.hasOwnProperty("interested_area") == false) {
-                    //     res.json({ status: false, message: "interested_area parameter is missing" });
-                    // }
-                    // else if (req.body.hasOwnProperty("additional_info") == false) {
-                    //     res.json({ status: false, message: "additional_info parameter is missing" });
-                    // }
+                    else if (req.body.hasOwnProperty("email") == false) {
+                        res.json({ status: false, message: "Trainer Email Parameter Is Missing" });
+                    }
+                    else if (req.body.hasOwnProperty("phone_no") == false) {
+                        res.json({ status: false, message: "Trainer Phone Number Parameter Is Missing" });
+                    }
                 }
             } catch (er) {
                 console.log("error occured : " + er);
