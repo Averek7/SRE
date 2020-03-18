@@ -79,14 +79,14 @@ module.exports = {
                             else {
                                 var new_student = {
                                     student_name: req.body.student_name,
-                                    student_image:req.body.student_image,
+                                    student_image: req.body.student_image,
                                     email: req.body.email,
                                     student_age: req.body.student_age,
                                     institute_name: req.body.institute_name,
                                     education: req.body.education,
                                     phone_no: req.body.phone_no,
-                                    batch: [{batch:req.body.batch,batch_type:req.body.batch_type}],
-                                    amount:[{comment:"Advance",amount:req.body.advance_amount}],
+                                    batch: [{ batch: req.body.batch, batch_type: req.body.batch_type }],
+                                    amount: [{ comment: "Advance", amount: req.body.advance_amount }],
                                     father_name: req.body.father_name,
                                     roll_no: req.body.roll_no,
                                     father_occupation: req.body.father_occupation,
@@ -135,6 +135,85 @@ module.exports = {
                     else if (req.body.hasOwnProperty("additional_info") == false) {
                         res.json({ status: false, message: "additional_info parameter is missing" });
                     }
+                }
+            } catch (er) {
+                console.log("error occured : " + er);
+                res.json({ status: false, Message: "failed at try" });
+            }
+        });
+
+
+
+
+        app.post('/signup', function (req, res) {
+            try {
+                if (req.body.hasOwnProperty("student_name") && req.body.hasOwnProperty("email") && req.body.hasOwnProperty("student_age") && req.body.hasOwnProperty("institute_name") && req.body.hasOwnProperty("education") &&
+                    req.body.hasOwnProperty("phone_no") && req.body.hasOwnProperty("father_name") && req.body.hasOwnProperty("father_occupation")) {
+                    var user = {};
+                    jwt.sign({ user }, 'secretkey', (err, user_token) => {
+                        student_module.student_exists(req.body.email, function (result, exists, message) {
+                            if (exists) {
+                                res.json({ status: true, message: message, user_token: result });
+                            }
+                            else {
+                                var new_student = {
+                                    student_name: req.body.student_name,
+                                    student_image: req.body.student_image,
+                                    email: req.body.email,
+                                    student_age: req.body.student_age,
+                                    institute_name: req.body.institute_name,
+                                    education: req.body.education,
+                                    phone_no: req.body.phone_no,
+                                    batch: [{ batch: req.body.batch, batch_type: req.body.batch_type }],
+                                    amount: [{ comment: "Advance", amount: req.body.advance_amount }],
+                                    father_name: req.body.father_name,
+                                    roll_no: req.body.roll_no,
+                                    father_occupation: req.body.father_occupation,
+                                    user_token: user_token,
+                                    password: req.body.password,
+                                    type: 'S',
+                                    active: true
+                                };
+                                student_module.add_student(new_student, function (result, error, message) {
+                                    if (error) {
+                                        res.json({ status: false, message: message });
+                                    }
+                                    else {
+                                        res.json({ status: true, message: message, result: result.insertedId, user_token: user_token });
+                                    }
+                                })
+                            }
+                        })
+                    });
+                }
+                else {
+                    if (req.body.hasOwnProperty("student_name") == false) {
+                        res.json({ status: false, message: "name parameter is missing" });
+                    }
+                    else if (req.body.hasOwnProperty("email") == false) {
+                        res.json({ status: false, message: "email parameter is missing" });
+                    }
+                    else if (req.body.hasOwnProperty("phone_no") == false) {
+                        res.json({ status: false, message: "contact_no parameter is missing" });
+                    }
+                    else if (req.body.hasOwnProperty("education") == false) {
+                        res.json({ status: false, message: "education parameter is missing" });
+                    }
+                    else if (req.body.hasOwnProperty("institute_name") == false) {
+                        res.json({ status: false, message: "college_name parameter is missing" });
+                    }
+                    // else if (req.body.hasOwnProperty("degree") == false) {
+                    //     res.json({ status: false, message: "degree parameter is missing" });
+                    // }
+                    // else if (req.body.hasOwnProperty("branch") == false) {
+                    //     res.json({ status: false, message: "branch parameter is missing" });
+                    // }
+                    // else if (req.body.hasOwnProperty("interested_area") == false) {
+                    //     res.json({ status: false, message: "interested_area parameter is missing" });
+                    // }
+                    // else if (req.body.hasOwnProperty("additional_info") == false) {
+                    //     res.json({ status: false, message: "additional_info parameter is missing" });
+                    // }
                 }
             } catch (er) {
                 console.log("error occured : " + er);
@@ -206,16 +285,13 @@ module.exports = {
             try {
                 if (req.body.hasOwnProperty("student_id")) {
                     student_module.delete_student(req.body.student_id, function (result, error, message) {
-                        if (error) {
-                            res.json({ status: false, message: message });
-                        }
-                        else {
-                            res.json({ status: true, message: message, result: req.body.student_id });
-                        }
+
+                        res.json({ status: false, message: message });
+
                     })
                 }
                 else {
-                    if (req.body.hasOwnProperty("id") == false) {
+                    if (req.body.hasOwnProperty("student_id") == false) {
                         res.json({ status: false, message: "id parameter is missing" });
                     }
                     else if (req.body.hasOwnProperty("user_token") == false) {
@@ -264,10 +340,46 @@ module.exports = {
         //Params: user_token
         //Functions: view_all_students
         //Response: status, message, result
-
+        app.post('/search_student', function (req, res) {
+            try {
+                student_module.search_students(req.body.keyword, function (result, error, message) {
+                    if (error) {
+                        res.json({ status: false, message: message });
+                    }
+                    else {
+                        res.json({ status: true, message: message, result: result });
+                    }
+                })
+            }
+            catch (er) {
+                console.log("error occured : " + er);
+                res.json({ status: false, Message: er });
+            }
+        })
         app.post('/view_all_students', function (req, res) {
             try {
                 student_module.view_all_students(function (result, error, message) {
+                    if (error) {
+                        res.json({ status: false, message: message });
+                    }
+                    else {
+                        res.json({ status: true, message: message, result: result });
+                    }
+                })
+            }
+
+
+
+            catch (er) {
+                console.log("error occured : " + er);
+                res.json({ status: false, Message: er });
+            }
+        });
+
+
+        app.post('/view_profile', function (req, res) {
+            try {
+                student_module.view_profile(req.body.user_id, function (result, error, message) {
                     if (error) {
                         res.json({ status: false, message: message });
                     }

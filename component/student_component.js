@@ -41,7 +41,7 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                                 callBack(null, true, "Error Occurred");
                             }
                             else {
-                                callBack(result, false, "Student Removed Successfully");
+                                callBack(result, true, "Student Removed Successfully");
                             }
                             db.close();
                         }
@@ -260,7 +260,7 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                 students = [];
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
-                    var cursor = db.db().collection(dbb.USER).find({ email: { $regex: keyword }, type: "S" });
+                    var cursor = db.db().collection(dbb.USER).find({ roll_no: { $regex: keyword }, type: "S" });
                     cursor.forEach(function (doc, err) {
                         if (err) {
                             callBack(null, true, err);
@@ -734,6 +734,33 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                             db.close();
                         });
                 });
+            } catch (e) {
+                callBack(null, true, e);
+            }
+        },
+
+
+        view_profile: function (user_id, callBack) {
+            try {
+                exists = false;
+                result=''
+                // user_token = false;
+                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
+                    assert.equal(null, err);
+                    var cursor = db.db().collection(dbb.USER).find({ "_id": new ObjectID(user_id) });
+                    cursor.forEach(function (doc, err) {
+                        result=doc;
+                    }, function () {
+
+                        if (exists) {
+                            callBack(result, true, "User Found");
+                        }
+                        else {
+                            callBack(exists, false, "Invalid User");
+                        }
+                        db.close();
+                    })
+                })
             } catch (e) {
                 callBack(null, true, e);
             }
