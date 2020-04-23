@@ -1,24 +1,45 @@
 module.exports = function (mongo, ObjectID, url, assert, dbb) {
-    var batch_module = {
+    var course_module = {
 
-        //Start of Student Exists
-        batch_exists: function (batch_name, callBack) {
+        //Start of course Exists
+        course_exists: function (course_name, callBack) {
             try {
                 exists = false;
                 user_token = false;
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
-                    var cursor = db.db().collection(dbb.BATCH).find({ "batch_name": batch_name });
+                    var cursor = db.db().collection(dbb.COURSE).find({ "course_name": course_name });
                     cursor.forEach(function (doc, err) {
                         assert.equal(null, err);
                         exists = true;
                         user_token = doc.user_token;
                     }, function () {
                         if (exists) {
-                            callBack(user_token, true, "Batch Already Exists!");
+                            callBack(user_token, true, "course name already exists");
                         }
                         else {
-                            callBack(exists, false, "");
+                            callBack(exists, false, "course name not exists");
+                        }
+                        db.close();
+                    })
+                })
+            } catch (e) {
+                callBack(null, true, e);
+            }
+        },
+        // //End of course Exists
+
+        //Start of Add course
+        add_course: function (new_course, callBack) {
+            try {
+                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
+                    assert.equal(null, err);
+                    db.db().collection(dbb.COURSE).insertOne(new_course, function (err, result) {
+                        if (err) {
+                            callBack(null, false, "Error Occurred");
+                        }
+                        else {
+                            callBack(result, true, "course Added Successfully");
                         }
                         db.close();
                     })
@@ -28,239 +49,116 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
             }
         },
 
-        //End of Student Exists
+        //End of Add course
 
-        // //Start of User Exists
-        // userExists: function(user_token, callBack) {
-        //   try {
-        //     var userExists = false; 
-        //     mongo.connect(url, {useNewUrlParser: true}, 
-        //       function (err, db) {
-        //       assert.equal(null, err);
-        //       var cursor = db.db().collection(dbb.USER).find({ "user_token": user_token });
-        //       cursor.forEach(function (doc, err) {
-        //         assert.equal(null, err);
-        //         userExists = true;
-        //       }, function(){
-        //         if (userExists) {
-        //             callBack(userExists, true, "");
-        //         } else {
-        //             callBack(userExists, false, "User Does not Exists!");
-        //           }
-        //           db.close();
-        //           })
-        //       })
-        //   } catch (e) {
-        //       callBack(null, true, e);
-        //   }
-        // },
-
-        // //End of User Exists
-
-        //Start of Add Student
-        add_batch: function (new_batch, callBack) {
+        //Start of Update course
+        update_course: function (course_id, course_name, course_duration, callBack) {
             try {
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
-                    db.db().collection(dbb.BATCH).insertOne(new_batch, function (err, result) {
+                    db.db().collection(dbb.COURSE).updateOne({ "_id": new ObjectID(course_id) }, {
+                        $set: {
+                            course_name: course_name,
+                            course_duration: course_duration
+
+                        }
+                    }, { upsert: false }, function (err, result) {
+                        if (err) {
+                            callBack(null, false, err);
+                        } else {
+                            callBack(result, true, "course Updated Successfully");
+                        }
+                        db.close();
+                    });
+                });
+            } catch (e) {
+                callBack(null, true, e);
+            }
+        },
+        //End of Update course
+
+
+        //Start of Delete course
+        delete_course: function (course_id, callBack) {
+            try {
+                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
+                    assert.equal(null, err);
+                    db.db().collection(dbb.COURSE).deleteOne({
+                        "_id": new ObjectID(course_id)
+                    }, function (err, result) {
+
                         if (err) {
                             callBack(null, true, "Error Occurred");
                         }
                         else {
-                            callBack(result, false, "Batch Added Successfully");
+                            callBack(result, false, "course Removed Successfully");
                         }
                         db.close();
-                    })
-                })
-            } catch (e) {
-                callBack(null, true, e);
-            }
-        },
-
-        //End of Add Student
-
-        //Start of Update Student
-        update_batch: function (batch_id, batch_name, batch_price, batch_start_date, callBack) {
-            try {
-                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
-                    assert.equal(null, err);
-                    db.db().collection(dbb.BATCH).updateOne({ "_id": new ObjectID(batch_id) }, {
-                        $set: {
-                            batch_name: batch_name,
-                            batch_price: batch_price,
-                            batch_start_date: batch_start_date
-                        }
-                    }, { upsert: false }, function (err, result) {
-                        if (err) {
-                            callBack(null, true, err);
-                        } else {
-                            callBack(result, false, "Batch Updated Successfully");
-                        }
-                        db.close();
-                    });
-                });
-            } catch (e) {
-                callBack(null, true, e);
-            }
-        },
-
-        end_batch: function (batch_id, batch_end_date,user_id,user_name, callBack) {
-            try {
-                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
-                    assert.equal(null, err);
-                    db.db().collection(dbb.BATCH).updateOne({ "_id": new ObjectID(batch_id) }, {
-                        $set: {
-                            batch_end_date: batch_end_date,
-                            active:false,
-                            ended_by:{"user_id":user_id,"user_name":user_name}
-                        }
-                    }, { upsert: false }, function (err, result) {
-                        if (err) {
-                            callBack(null, true, err);
-                        } else {
-                            callBack(result, false, "Batch Ended");
-                        }
-                        db.close();
-                    });
-                });
-            } catch (e) {
-                callBack(null, true, e);
-            }
-        },
-        //End of Update Student
-
-        //Start of View all Students
-        view_all_batch: function (course_id,callBack) {
-            try {
-                batch = [];
-                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
-                    assert.equal(null, err);
-                    var cursor = db.db().collection(dbb.BATCH).find({ "course_id": course_id });
-                    cursor.forEach(function (doc, err) {
-                        if (err) {
-                            callBack(null, true, err);
-                            db.close();
-                        }
-                        else {
-                            batch.push(doc);
-                        }
-                    }, function () {
-                        if (batch.length == 0) {
-                            callBack(null, true, "No Batch's Found In This Course");
-                        }
-                        else {
-                            callBack(batch, false, "Batch Found");
-                        }
-                        db.close();
-                    })
-                })
-            } catch (e) {
-                callBack(null, true, e);
-            }
-        },
-        view_active_batch: function (callBack) {
-            try {
-                batch = [];
-                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
-                    assert.equal(null, err);
-                    var cursor = db.db().collection(dbb.BATCH).find({ "active": true });
-                    cursor.forEach(function (doc, err) {
-                        if (err) {
-                            callBack(null, true, err);
-                            db.close();
-                        }
-                        else {
-                            batch.push(doc);
-                        }
-                    }, function () {
-                        if (batch.length == 0) {
-                            callBack(null, true, "No active Batch");
-                        }
-                        else {
-                            callBack(batch, false, "Batch Found");
-                        }
-                        db.close();
-                    })
-                })
-            } catch (e) {
-                callBack(null, true, e);
-            }
-        },
 
 
-        view_batch_details: function (batch_id, callBack) {
-            try {
-                batch = "";
-                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
-                    assert.equal(null, err);
-                    var cursor = db.db().collection(dbb.BATCH).find({ "_id": new ObjectID(batch_id) });
-                    cursor.forEach(function (doc, err) {
-                        if (err) {
-                            callBack(null, true, err);
-                            db.close();
-                        }
-                        else {
-                            batch=doc;
-                        }
-                    }, function () {
-                        if (batch.length == 0) {
-                            callBack(null, true, "Batch Not Found");
-                        }
-                        else {
-                            callBack(batch, false, "Batch Found");
-                        }
-                        db.close();
-                    })
-                })
-            } catch (e) {
-                callBack(null, true, e);
-            }
-        },
-
-        delete_batch: function (id, callBack) {
-            try {
-                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
-                    assert.equal(null, err);
-                    db.db().collection(dbb.BATCH).deleteOne({
-                        "_id": new ObjectID(id)}, function(err, result) {
-                            if (err) {
-                                callBack(null, true, "Error Occurred");
-                            }
-                            else {
-                                callBack(result, false, "Batch Removed Successfully");
-                            }
-                            db.close();
-                        }
+                    }
                     )
-
                 })
             } catch (e) {
                 callBack(null, true, e);
             }
-        }
+        },
+        //End of Delete Student
 
-        //End of View all Students
 
-        //Start of Search Student
-        // search_batch: function (keyword, callBack) {
+
+        //Start of View all course
+        view_all_course: function (program_id, callBack) {
+            try {
+                course = [];
+                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
+                    assert.equal(null, err);
+                    var cursor = db.db().collection(dbb.COURSE).find({ "program_id": program_id });
+                    cursor.forEach(function (doc, err) {
+                        if (err) {
+                            callBack(null, true, err);
+                            db.close();
+                        }
+                        else {
+                            course.push(doc);
+                        }
+                    }, function () {
+                        if (course.length == 0) {
+                            callBack(null, true, "No course's Found In This Program");
+                        }
+                        else {
+                            callBack(course, false, "course Found");
+                        }
+                        db.close();
+                    })
+                })
+            } catch (e) {
+                callBack(null, true, e);
+            }
+        },
+
+        //End of View all course
+
+        //Start of Search course
+        // search_course: function (keyword, callBack) {
         //     try {
-        //         batch = [];
+        //         course = [];
         //         mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
         //             assert.equal(null, err);
-        //             var cursor = db.db().collection(dbb.BATCH).find({ email: { $regex: keyword },  });
+        //             var cursor = db.db().collection(dbb.COURSE).find({ course_name: { $regex: keyword }, type: "S" });
         //             cursor.forEach(function (doc, err) {
         //                 if (err) {
         //                     callBack(null, true, err);
         //                 }
         //                 else {
-        //                     batch.push(doc);
+        //                     course.push(doc);
         //                 }
         //             }, function () {
-        //                 if (batch.length == 0) {
-        //                     callBack(null, true, "No Batch's Found");
+        //                 if (course.length == 0) {
+        //                     callBack(null, true, "No course's Found");
         //                 }
         //                 else {
-        //                     callBack(batch, false, "Batch Found");
+        //                     callBack(btachtype, false, "course Found");
         //                 }
         //                 db.close();
         //             })
@@ -271,60 +169,7 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
 
         // },
 
-        //End of Search Student
-
-        //Start of Delete Student
-
-
-
-        //Start of Register Domain
-        // register_domain: function (batch_id, domain_id, callBack) {
-        //     try {
-        //         mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
-        //             assert.equal(null, err);
-        //             db.db().collection(dbb.USER).updateOne({ "_id": new ObjectID(student_id) },
-        //                 { $push: { domains: domain_id } },
-        //                 { upsert: false }, function (err, result) {
-        //                     if (err) {
-        //                         callBack(null, true, err);
-        //                     } else {
-        //                         callBack(result, false, "Successfully Registered to Domain");
-        //                     }
-        //                     db.close();
-        //                 });
-        //         });
-        //     } catch (e) {
-        //         callBack(null, true, e);
-        //     }
-        // },
-        //End of Register Domain
-
-        //Start of Already Registered Domain
-        // already_registered: function (student_id, domain_id, callBack) {
-        //     try {
-        //         exists = false;
-        //         mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
-        //             assert.equal(null, err);
-        //             var cursor = db.db().collection(dbb.USER).find({ "_id": new ObjectID(student_id), "domains": domain_id });
-        //             cursor.forEach(function (doc, err) {
-        //                 assert.equal(null, err);
-        //                 exists = true;
-        //             }, function () {
-        //                 if (exists) {
-        //                     callBack(exists, true, "Already Registered!");
-        //                 }
-        //                 else {
-        //                     callBack(exists, false, "");
-        //                 }
-        //                 db.close();
-        //             })
-        //         })
-        //     } catch (e) {
-        //         callBack(null, true, e);
-        //     }
-        // },
-
-        //End of Already Registered Domain
+        //End of Search course
 
 
         //Start of Add To Batch
@@ -728,5 +573,5 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
         //End of edit profile
 
     }
-    return batch_module;
+    return course_module;
 }

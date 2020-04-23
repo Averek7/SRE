@@ -1,24 +1,24 @@
 module.exports = function (mongo, ObjectID, url, assert, dbb) {
-    var batchtype_module = {
+    var subject_module = {
 
-        //Start of batch Exists
-        batchtype_exists: function (batch_type_name, callBack) {
+        //Start of subject Exists
+        subject_exists: function (subject_name,batch_id, callBack) {
             try {
                 exists = false;
                 user_token = false;
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
-                    var cursor = db.db().collection(dbb.BATCHTYPE).find({ "batch_type_name": batch_type_name });
+                    var cursor = db.db().collection(dbb.SUBJECT).find({ "subject_name": subject_name,"batch_id":batch_id });
                     cursor.forEach(function (doc, err) {
                         assert.equal(null, err);
                         exists = true;
                         user_token = doc.user_token;
                     }, function () {
                         if (exists) {
-                            callBack(user_token, true, "Batch name already exists");
+                            callBack(user_token, true, "Subject Name Already exists In This Batch");
                         }
                         else {
-                            callBack(exists, false, "Batch name not exists");
+                            callBack(exists, false, "subject name not exists");
                         }
                         db.close();
                     })
@@ -27,47 +27,19 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                 callBack(null, true, e);
             }
         },
+        // //End of subject Exists
 
-        //End of Student Exists
-
-        // //Start of User Exists
-        // userExists: function(user_token, callBack) {
-        //   try {
-        //     var userExists = false; 
-        //     mongo.connect(url, {useNewUrlParser: true}, 
-        //       function (err, db) {
-        //       assert.equal(null, err);
-        //       var cursor = db.db().collection(dbb.USER).find({ "user_token": user_token });
-        //       cursor.forEach(function (doc, err) {
-        //         assert.equal(null, err);
-        //         userExists = true;
-        //       }, function(){
-        //         if (userExists) {
-        //             callBack(userExists, true, "");
-        //         } else {
-        //             callBack(userExists, false, "User Does not Exists!");
-        //           }
-        //           db.close();
-        //           })
-        //       })
-        //   } catch (e) {
-        //       callBack(null, true, e);
-        //   }
-        // },
-
-        // //End of User Exists
-
-        //Start of Add Student
-        add_batchtype: function (new_batchtype, callBack) {
+        //Start of Add subject
+        add_subject: function (new_subject, callBack) {
             try {
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
-                    db.db().collection(dbb.BATCHTYPE).insertOne(new_batchtype, function (err, result) {
+                    db.db().collection(dbb.SUBJECT).insertOne(new_subject, function (err, result) {
                         if (err) {
                             callBack(null, false, "Error Occurred");
                         }
                         else {
-                            callBack(result, true, "Batch Type Added Successfully");
+                            callBack(result, true, "subject Added Successfully");
                         }
                         db.close();
                     })
@@ -77,25 +49,22 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
             }
         },
 
-        //End of Add batchtype
+        //End of Add subject
 
-        //Start of Update batchtype
-        update_batchtype: function (id,duration,batchtype_name,callBack) {
+        //Start of Update subject
+        update_subject: function (subject_id, subject_name, callBack) {
             try {
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
-                    db.db().collection(dbb.BATCHTYPE).updateOne({ "_id": new ObjectID(id) }, {
+                    db.db().collection(dbb.SUBJECT).updateOne({ "_id": new ObjectID(subject_id) }, {
                         $set: {
-                         
-                            batchtype_name:batchtype_name,
-                            duration:duration,
-
+                            subject_name: subject_name,
                         }
                     }, { upsert: false }, function (err, result) {
                         if (err) {
                             callBack(null, false, err);
                         } else {
-                            callBack(result, true, "Updated Successfully");
+                            callBack(result, true, "subject Updated Successfully");
                         }
                         db.close();
                     });
@@ -104,136 +73,90 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                 callBack(null, true, e);
             }
         },
+        //End of Update subject
 
-        delete_batchtype: function (id, callBack) {
+
+        //Start of Delete subject
+        delete_subject: function (subject_id, callBack) {
             try {
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
-                    db.db().collection(dbb.BATCHTYPE).deleteOne({
-                        "_id": new ObjectID(id), function(err, result) {
-                            if (err) {
-                                callBack(null, true, "Error Occurred");
-                            }
-                            else {
-                                callBack(result, false, "Trainer Removed Successfully");
-                            }
-                            db.close();
-                        }
-                    })
-                })
-            } catch (e) {
-                callBack(null, true, e);
-            }
-        },
-        //End of Update batchtype
+                    db.db().collection(dbb.SUBJECT).deleteOne({
+                        "_id": new ObjectID(subject_id)
+                    }, function (err, result) {
 
-        //Start of View all batchtype
-        view_all_batchtype: function (callBack) {
-            try {
-                batchtype = [];
-                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
-                    assert.equal(null, err);
-                    var cursor = db.db().collection(dbb.BATCHTYPE).find();
-                    cursor.forEach(function (doc, err) {
                         if (err) {
-                            callBack(null, true, err);
-                            db.close();
+                            callBack(null, true, "Error Occurred");
                         }
                         else {
-                            batchtype.push(doc);
-                        }
-                    }, function () {
-                        if (batchtype.length == 0) {
-                            callBack(null, true, "No Student's Found");
-                        }
-                        else {
-                            callBack(batchtype, false, "Students Found");
+                            callBack(result, false, "subject Removed Successfully");
                         }
                         db.close();
-                    })
+
+
+                    }
+                    )
                 })
             } catch (e) {
                 callBack(null, true, e);
             }
         },
-
-        //End of View all batchtype
-
-        //Start of Search batchtype
-        search_batchtype: function (keyword, callBack) {
-            try {
-                batchtype = [];
-                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
-                    assert.equal(null, err);
-                    var cursor = db.db().collection(dbb.BATCHTYPE).find({ batchtype_name: { $regex: keyword }, type: "S" });
-                    cursor.forEach(function (doc, err) {
-                        if (err) {
-                            callBack(null, true, err);
-                        }
-                        else {
-                            batchtype.push(doc);
-                        }
-                    }, function () {
-                        if (batchtype.length == 0) {
-                            callBack(null, true, "No batchtype's Found");
-                        }
-                        else {
-                            callBack(btachtype, false, "Batchtype Found");
-                        }
-                        db.close();
-                    })
-                })
-            } catch (e) {
-                callBack(null, true, e);
-            }
-
-        },
-
-        //End of Search batchtype
-
-        //Start of Delete batchtype
-
         //End of Delete Student
 
 
-        //Start of Register Domain
-        // register_domain: function (student_id, domain_id, callBack) {
-        //     try {
-        //         mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
-        //             assert.equal(null, err);
-        //             db.db().collection(dbb.USER).updateOne({ "_id": new ObjectID(student_id) },
-        //                 { $push: { domains: domain_id } },
-        //                 { upsert: false }, function (err, result) {
-        //                     if (err) {
-        //                         callBack(null, true, err);
-        //                     } else {
-        //                         callBack(result, false, "Successfully Registered to Domain");
-        //                     }
-        //                     db.close();
-        //                 });
-        //         });
-        //     } catch (e) {
-        //         callBack(null, true, e);
-        //     }
-        // },
-        //End of Register Domain
 
-        //Start of Already Registered Domain
-        // already_registered: function (student_id, domain_id, callBack) {
+        //Start of View all subject
+        view_batch_subject: function (batch_id, callBack) {
+            try {
+                subject = [];
+                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
+                    assert.equal(null, err);
+                    var cursor = db.db().collection(dbb.SUBJECT).find({ "batch_id": batch_id });
+                    cursor.forEach(function (doc, err) {
+                        if (err) {
+                            callBack(null, true, err);
+                            db.close();
+                        }
+                        else {
+                            subject.push(doc);
+                        }
+                    }, function () {
+                        if (subject.length == 0) {
+                            callBack(null, true, "No subject's Found In This Program");
+                        }
+                        else {
+                            callBack(subject, false, "subject Found");
+                        }
+                        db.close();
+                    })
+                })
+            } catch (e) {
+                callBack(null, true, e);
+            }
+        },
+
+        //End of View all subject
+
+        //Start of Search subject
+        // search_subject: function (keyword, callBack) {
         //     try {
-        //         exists = false;
+        //         subject = [];
         //         mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
         //             assert.equal(null, err);
-        //             var cursor = db.db().collection(dbb.USER).find({ "_id": new ObjectID(student_id), "domains": domain_id });
+        //             var cursor = db.db().collection(dbb.SUBJECT).find({ subject_name: { $regex: keyword }, type: "S" });
         //             cursor.forEach(function (doc, err) {
-        //                 assert.equal(null, err);
-        //                 exists = true;
-        //             }, function () {
-        //                 if (exists) {
-        //                     callBack(exists, true, "Already Registered!");
+        //                 if (err) {
+        //                     callBack(null, true, err);
         //                 }
         //                 else {
-        //                     callBack(exists, false, "");
+        //                     subject.push(doc);
+        //                 }
+        //             }, function () {
+        //                 if (subject.length == 0) {
+        //                     callBack(null, true, "No subject's Found");
+        //                 }
+        //                 else {
+        //                     callBack(btachtype, false, "subject Found");
         //                 }
         //                 db.close();
         //             })
@@ -241,9 +164,10 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
         //     } catch (e) {
         //         callBack(null, true, e);
         //     }
+
         // },
 
-        //End of Already Registered Domain
+        //End of Search subject
 
 
         //Start of Add To Batch
@@ -647,5 +571,5 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
         //End of edit profile
 
     }
-    return batchtype_module;
+    return subject_module;
 }

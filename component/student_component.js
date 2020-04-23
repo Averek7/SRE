@@ -228,7 +228,7 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                 students = [];
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
-                    var cursor = db.db().collection(dbb.USER).find({ "batch": batch_id });
+                    var cursor = db.db().collection(dbb.USER).find({ "batch.batch_id": batch_id });
                     cursor.forEach(function (doc, err) {
                         if (err) {
                             callBack(null, true, err);
@@ -749,14 +749,21 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                     assert.equal(null, err);
                     var cursor = db.db().collection(dbb.USER).find({ "_id": new ObjectID(user_id) });
                     cursor.forEach(function (doc, err) {
-                        result=doc;
+                        if (err) {
+                            callBack(null, true, err);
+                            db.close();
+                        }
+                        else {
+                            result=doc;
+                            exists=true;
+                        }
                     }, function () {
 
                         if (exists) {
-                            callBack(result, true, "User Found");
+                            callBack(result, false, "User Found");
                         }
                         else {
-                            callBack(exists, false, "Invalid User");
+                            callBack(result, true, "Invalid User");
                         }
                         db.close();
                     })

@@ -17,7 +17,7 @@ module.exports = {
                                 var new_trainer = {
                                     trainer_name: req.body.trainer_name,
                                     trainer_age: req.body.trainer_age,
-                                    trainer_qualiication: req.body.trainer_qualiication,
+                                    trainer_qualification: req.body.trainer_qualification,
                                     trainer_specialization: req.body.trainer_specialization,
                                     email: req.body.email,
                                     phone_no: req.body.phone_no,

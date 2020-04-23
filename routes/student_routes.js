@@ -68,8 +68,8 @@ module.exports = {
 
         app.post('/add_student', function (req, res) {
             try {
-                if (req.body.hasOwnProperty("student_name") && req.body.hasOwnProperty("email") && req.body.hasOwnProperty("student_age") && req.body.hasOwnProperty("institute_name") && req.body.hasOwnProperty("education") &&
-                    req.body.hasOwnProperty("phone_no") && req.body.hasOwnProperty("batch") && req.body.hasOwnProperty("advance_amount") && req.body.hasOwnProperty("batch_type") && req.body.hasOwnProperty("father_name") && req.body.hasOwnProperty("roll_no") && req.body.hasOwnProperty("father_occupation")) {
+                if (req.body.hasOwnProperty("student_name") && req.body.hasOwnProperty("email") && req.body.hasOwnProperty("student_dob") && req.body.hasOwnProperty("institute_name") && req.body.hasOwnProperty("education") &&
+                    req.body.hasOwnProperty("phone_no") && req.body.hasOwnProperty("batch_id") && req.body.hasOwnProperty("advance_amount")  && req.body.hasOwnProperty("father_name") && req.body.hasOwnProperty("roll_no") && req.body.hasOwnProperty("father_occupation")) {
                     var user = {};
                     jwt.sign({ user }, 'secretkey', (err, user_token) => {
                         student_module.student_exists(req.body.email, function (result, exists, message) {
@@ -78,15 +78,13 @@ module.exports = {
                             }
                             else {
                                 var new_student = {
-                                    student_name: req.body.student_name,
-                                    student_image: req.body.student_image,
+                                    name: req.body.student_name,
                                     email: req.body.email,
-                                    student_age: req.body.student_age,
+                                    student_dob: req.body.student_dob,
                                     institute_name: req.body.institute_name,
                                     education: req.body.education,
                                     phone_no: req.body.phone_no,
-                                    batch: [{ batch: req.body.batch, batch_type: req.body.batch_type }],
-                                    amount: [{ comment: "Advance", amount: req.body.advance_amount }],
+                                    batch: [{ batch_id: req.body.batch_id, hostel_amount: req.body.hostel_amount, paid: [{"amount": req.body.advance_amount,comment:"Advance"}]}],  
                                     father_name: req.body.father_name,
                                     roll_no: req.body.roll_no,
                                     father_occupation: req.body.father_occupation,
@@ -381,7 +379,7 @@ module.exports = {
             try {
                 student_module.view_profile(req.body.user_id, function (result, error, message) {
                     if (error) {
-                        res.json({ status: false, message: message });
+                        res.json({ status: false, message: message,result });
                     }
                     else {
                         res.json({ status: true, message: message, result: result });

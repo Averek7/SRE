@@ -1,9 +1,10 @@
 
 var dbb = {
     USER:'users',
-    BATCH:'batch',
-    BATCHTYPE:'batchtype',
-    STUDENTS:'students',
+    PROGRAM: 'programs',
+    COURSE:'courses',
+    BATCH:'batches',
+    SUBJECT:'subjects',
 
 };
 
