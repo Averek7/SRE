@@ -76,6 +76,54 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
         //End of Update subject
 
 
+
+
+
+        take_attendance: function (subject_id,attendance, callBack) {
+            try {
+                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
+                    assert.equal(null, err);
+                    db.db().collection(dbb.SUBJECT).updateOne({ "_id": new ObjectID(subject_id) }, {
+                        $push: {
+                            attendance: attendance,
+                        }
+                    }, { upsert: false }, function (err, result) {
+                        if (err) {
+                            callBack(null, false, err);
+                        } else {
+                            callBack(result, true, "subject Updated Successfully");
+                        }
+                        db.close();
+                    });
+                });
+            } catch (e) {
+                callBack(null, true, e);
+            }
+        },
+
+
+        add_marks: function (subject_id, marks, callBack) {
+            try {
+                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
+                    assert.equal(null, err);
+                    db.db().collection(dbb.SUBJECT).updateOne({ "_id": new ObjectID(subject_id) }, {
+                        $push: {
+                            marks: marks,
+                        }
+                    }, { upsert: false }, function (err, result) {
+                        if (err) {
+                            callBack(null, false, err);
+                        } else {
+                            callBack(result, true, "subject Updated Successfully");
+                        }
+                        db.close();
+                    });
+                });
+            } catch (e) {
+                callBack(null, true, e);
+            }
+        },
+
         //Start of Delete subject
         delete_subject: function (subject_id, callBack) {
             try {

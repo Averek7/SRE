@@ -130,11 +130,73 @@ module.exports = {
                 }
             }
 
+            
+
 
 
             catch (er) {
                 console.log("error occured : " + er);
                 res.json({ status: false, Message: er });
+            }
+        });
+
+
+
+        app.post('/take_attendance', function (req, res) {
+            try {
+                if (req.body.hasOwnProperty("attendance") && req.body.hasOwnProperty("subject_id")) {
+                    subject_module.take_attendance(req.body.subject_id,req.body.attendance, function (result, error, message) {
+                        if (error) {
+                            res.json({ status: false, message: message });
+                        }
+                        else {
+                            res.json({ status: true, message: message, result: req.body.id });
+                        }
+                    })
+                }
+                else {
+                    if (req.body.hasOwnProperty("attendance") == false) {
+                        res.json({ status: false, message: "Attendance is missing" });
+                    }
+                    else if (req.body.hasOwnProperty("subject_id") == false) {
+                        res.json({ status: false, message: "Subject Id is missing" });
+                    }
+
+
+                }
+            } catch (er) {
+                console.log("error occured : " + err);
+                res.json({ status: false, Message: "failed at try" });
+            }
+        });
+
+
+
+        app.post('/add_marks', function (req, res) {
+            try {
+                if (req.body.hasOwnProperty("marks") && req.body.hasOwnProperty("subject_id")) {
+                    subject_module.take_attendance(req.body.subject_id,req.body.marks, function (result, error, message) {
+                        if (error) {
+                            res.json({ status: false, message: message });
+                        }
+                        else {
+                            res.json({ status: true, message: message, result: req.body.id });
+                        }
+                    })
+                }
+                else {
+                    if (req.body.hasOwnProperty("marks") == false) {
+                        res.json({ status: false, message: "marks is missing" });
+                    }
+                    else if (req.body.hasOwnProperty("subject_id") == false) {
+                        res.json({ status: false, message: "Subject Id is missing" });
+                    }
+
+
+                }
+            } catch (er) {
+                console.log("error occured : " + err);
+                res.json({ status: false, Message: "failed at try" });
             }
         });
 
