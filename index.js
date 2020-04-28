@@ -15,6 +15,9 @@ var courseroute = require('./routes/course_routes');
 var programroute = require('./routes/program_routes');
 var subjectroute = require('./routes/subject_routes');
 var paymentroute = require('./routes/payment_routes');
+var attendanceroute = require('./routes/attendance_routes');
+var markroute = require('./routes/mark_routes');
+
 
 
 var dbb = require('./configuration/collection');
@@ -48,6 +51,8 @@ batchroute.configure(app, mongo, ObjectID, url, assert, dbb);
 trainerroute.configure(app, mongo, ObjectID, url, assert, dbb);
 subjectroute.configure(app, mongo, ObjectID, url, assert, dbb);
 paymentroute.configure(app, mongo, ObjectID, url, assert, dbb);
+attendanceroute.configure(app, mongo, ObjectID, url, assert, dbb);
+markroute.configure(app, mongo, ObjectID, url, assert, dbb);
 
 
 app.get('/', function (req, res) {

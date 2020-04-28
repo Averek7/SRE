@@ -4,6 +4,7 @@ var jwt = require('jsonwebtoken');
 module.exports = {
     configure: function (app, mongo, ObjectID, url, assert, dbb) {
         var batch_module = require('../component/batch_component')(mongo, ObjectID, url, assert, dbb);
+        var student_module = require('../component/student_component')(mongo, ObjectID, url, assert, dbb);
         // var admin_module = require('../../component/admin_module')(mongo, ObjectID, url, assert, dbb);
 
 
@@ -48,11 +49,11 @@ module.exports = {
                                     batch_price: req.body.batch_price,
                                     program_id: req.body.program_id,
                                     batch_start_date: req.body.batch_start_date,
-                                    subjects:[],
-                                    students:[],
-                                    batch_strength:0,
-                                    total_price:0,
-                                    collected_price:0,
+                                    // subjects:[],
+                                    // students:[],
+                                    // batch_strength:0,
+                                    // total_price:0,
+                                    // collected_price:0,
                                     active: true,
                                 };
                                 batch_module.add_batch(new_batch, function (result, error, message) {
@@ -266,7 +267,11 @@ module.exports = {
                             res.json({ status: false, message: message });
                         }
                         else {
-                            res.json({ status: true, message: message, result: result });
+                            student_module.count_batch_strength(req.body.batch_id,function(strength){
+                                result.batch_strength=strength;
+                                res.json({ status: true, message: message, result: result });
+
+                            })
                         }
                     })
                 }

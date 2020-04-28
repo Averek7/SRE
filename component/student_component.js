@@ -774,6 +774,31 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
         },
 
 
+        count_batch_strength: function (batch_id, callBack) {
+            try {
+                students = [];
+                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
+                    assert.equal(null, err);
+                    var cursor = db.db().collection(dbb.USER).find({ "batch.batch_id": batch_id });
+                    cursor.count(function(doc,err) {
+                        if(err){
+                            callBack(err);
+                        }
+                        else{
+                            callBack(doc);
+
+                        }
+                        db.close();
+                    })
+                    // callBack(cursor)
+                    db.close();
+                })
+            } catch (e) {
+                callBack(null, true, e);
+            }
+        },
+
+
         //End of edit profile
 
     }

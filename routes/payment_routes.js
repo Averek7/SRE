@@ -40,47 +40,48 @@ module.exports = {
 
         app.post('/add_payment', function (req, res) {
             try {
-                if (req.body.hasOwnProperty("batch_id") && req.body.hasOwnProperty("comment") && req.body.hasOwnProperty("amount") && req.body.hasOwnProperty("student_id")) {
+                if (req.body.hasOwnProperty("batch_id") && req.body.hasOwnProperty("amount") && req.body.hasOwnProperty("student_id") && req.body.hasOwnProperty("date")) {
                     var user = {};
                     jwt.sign({ user }, 'secretkey', (err, user_token) => {
                         // payment_module.payment_exists(req.body.payment_name, function (result, exists, message) {
-                            if (exists) {
+                        // if (exists) {
+                        //     res.json({ status: false, message: message });
+                        // }
+                        // else {
+                        var new_payment = {
+                            batch_id: req.body.batch_id,
+                            comment: req.body.comment,
+                            amount: req.body.amount,
+                            student_id: req.body.student_id,
+                            date: req.body.date,
+                        };
+                        payment_module.add_payment(new_payment, function (result, error, message) {
+                            if (error) {
                                 res.json({ status: false, message: message });
                             }
                             else {
-                                var new_payment = {
-                                    payment_id: req.body.payment_id,
-                                    comment: req.body.comment,
-                                    amount: req.body.amount,
-                                    student_id: req.body.student_id,
-                                };
-                                payment_module.add_payment(new_payment, function (result, error, message) {
-                                    if (error) {
-                                        res.json({ status: false, message: message });
-                                    }
-                                    else {
-                                        res.json({ status: true, message: message, result: result.insertedId, user_token: user_token });
-                                    }
-                                })
+                                res.json({ status: true, message: message, result: result.insertedId, user_token: user_token });
                             }
+                        })
+                        // }
                         // })
                     });
                 }
                 else {
-                    if (req.body.hasOwnProperty("payment_name") == false) {
-                        res.json({ status: false, message: "payment name parameter is missing" });
+                    if (req.body.hasOwnProperty("batch_id") == false) {
+                        res.json({ status: false, message: "Batch_ Id parameter is Missing" });
                     }
-                    else if (req.body.hasOwnProperty("course_id") == false) {
-                        res.json({ status: false, message: "Course Id parameter is Missing" });
+                    else if (req.body.hasOwnProperty("amount") == false) {
+                        res.json({ status: false, message: "Amount parameter is Missing" });
                     }
-                    else if (req.body.hasOwnProperty("payment_price") == false) {
-                        res.json({ status: false, message: "payment price parameter is Missing" });
-                    }
-                    else if (req.body.hasOwnProperty("program_id") == false) {
+                    else if (req.body.hasOwnProperty("student_id") == false) {
                         res.json({ status: false, message: "Program Id parameter is Missing" });
                     }
-                    else if (req.body.hasOwnProperty("payment_start_date") == false) {
-                        res.json({ status: false, message: "payment Start Date parameter Is Missing" });
+                    else if (req.body.hasOwnProperty("date") == false) {
+                        res.json({ status: false, message: "Date parameter Is Missing" });
+                    }
+                    else if (req.body.hasOwnProperty("date") == false) {
+                        res.json({ status: false, message: "Date parameter Is Missing" });
                     }
                 }
             } catch (er) {

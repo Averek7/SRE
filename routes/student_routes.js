@@ -316,7 +316,9 @@ module.exports = {
                     })
                 }
                 else {
-
+                    if (req.body.hasOwnProperty("batch_id")===false){
+                        res.json({ status: false, message: "Batch Id Parameter is missing" });
+                    }
                 }
             }
             catch (er) {

@@ -5,7 +5,9 @@ var dbb = {
     COURSE:'courses',
     BATCH:'batches',
     SUBJECT:'subjects',
-    PAYMENT:'payments'
+    PAYMENT: 'payments',
+    ATTENDANCE:'attendances',
+    MARK: 'marks',
 
 };
 

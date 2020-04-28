@@ -82,15 +82,15 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
                     db.db().collection(dbb.USER).deleteOne({
-                        "_id": new ObjectID(id), function(err, result) {
-                            if (err) {
-                                callBack(null, true, "Error Occurred");
-                            }
-                            else {
-                                callBack(result, false, "Trainer Removed Successfully");
-                            }
-                            db.close();
+                        "_id": new ObjectID(id)
+                    }, function (err, result) {
+                        if (err) {
+                            callBack(null, true, "Error Occurred");
                         }
+                        else {
+                            callBack(result, false, "Trainer Removed Successfully");
+                        }
+                        db.close();
                     })
 
                 })
@@ -101,16 +101,18 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
         //End of Add Student
 
         //Start of Update Student
-        update_trainer: function (id, trainer_name , trainer_expertise , contact_no, callBack) {
+        update_trainer: function (id, trainer_name, trainer_qualification, trainer_specialization, contact_no, callBack) {
             try {
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
                     db.db().collection(dbb.USERS).updateOne({ "_id": new ObjectID(id) }, {
                         $set: {
-                            trainer_name: trainer_name,
+                            name: trainer_name,
                             // batch_type: batch_type,
                             contact_no: contact_no,
-                            trainer_expertise: trainer_expertise,
+                            trainer_qualification: trainer_qualification,
+                            trainer_specialization: trainer_specialization,
+                            // trainer_expertise: trainer_expertise,
                             // college_name: college_name,
                             // degree: degree,
                             // branch: branch,
@@ -139,7 +141,7 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                 trainer = [];
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
-                    var cursor = db.db().collection(dbb.USER).find({"type": "T" });
+                    var cursor = db.db().collection(dbb.USER).find({ "type": "T" });
                     cursor.forEach(function (doc, err) {
                         if (err) {
                             callBack(null, true, err);

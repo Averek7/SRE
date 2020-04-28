@@ -6,7 +6,7 @@ module.exports = {
         var trainer_module = require('../component/trainer_component')(mongo, ObjectID, url, assert, dbb);
         app.post('/add_trainer', function (req, res) {
             try {
-                if (req.body.hasOwnProperty("trainer_name") && req.body.hasOwnProperty("trainer_age") && req.body.hasOwnProperty("trainer_qualification") && req.body.hasOwnProperty("trainer_specialization") && req.body.hasOwnProperty("email") && req.body.hasOwnProperty("phone_no")) {
+                if (req.body.hasOwnProperty("trainer_name") && req.body.hasOwnProperty("trainer_qualification") && req.body.hasOwnProperty("trainer_specialization") && req.body.hasOwnProperty("email") && req.body.hasOwnProperty("contact_no")) {
                     var user = {};
                     jwt.sign({ user }, 'secretkey', (err, user_token) => {
                         trainer_module.trainer_exists(req.body.trainer_name, function (result, exists, message) {
@@ -15,14 +15,14 @@ module.exports = {
                             }
                             else {
                                 var new_trainer = {
-                                    trainer_name: req.body.trainer_name,
-                                    trainer_age: req.body.trainer_age,
+                                    name: req.body.trainer_name,
+                                    trainer_dob: req.body.dob,
                                     trainer_qualification: req.body.trainer_qualification,
                                     trainer_specialization: req.body.trainer_specialization,
                                     email: req.body.email,
-                                    phone_no: req.body.phone_no,
+                                    contact_no: req.body.contact_no,
                                     password:'Pass1234',
-                                    profilepic:req.body.profilepic,
+                                    profilepic:"",
                                     type: 'T',
                                     // active: true
                                 };
@@ -65,8 +65,8 @@ module.exports = {
         });
         app.post('/delete_trainer', function (req, res) {
             try {
-                if (req.body.hasOwnProperty("student_id")) {
-                    trainer_module.delete_trainer(req.body.student_id, function (result, error, message) {
+                if (req.body.hasOwnProperty("trainer_id")) {
+                    trainer_module.delete_trainer(req.body.trainer_id, function (result, error, message) {
                         if (error) {
                             res.json({ status: false, message: message });
                         }
@@ -76,7 +76,7 @@ module.exports = {
                     })
                 }
                 else {
-                    if (req.body.hasOwnProperty("id") == false) {
+                    if (req.body.hasOwnProperty("trainer_id") == false) {
                         res.json({ status: false, message: "id parameter is missing" });
                     }
                     else if (req.body.hasOwnProperty("user_token") == false) {
@@ -98,8 +98,8 @@ module.exports = {
 
         app.post('/update_trainer', function (req, res) {
             try {
-                if (req.body.hasOwnProperty("id") && req.body.hasOwnProperty("trainer_name") && req.body.hasOwnProperty("trainer_expertise").hasOwnProperty("contact_no")) {
-                    trainer_module.update_trainer(req.body.id, req.body.trainer_name, req.body.trainer_name,req.body.contact_no, function (result, error, message) {
+                if (req.body.hasOwnProperty("trainer_id") && req.body.hasOwnProperty("trainer_name") ) {
+                    trainer_module.update_trainer(req.body.trainer_id, req.body.trainer_name, req.body.trainer_qualification, req.body.trainer_specialization,req.body.contact_no, function (result, error, message) {
                         if (error) {
                             res.json({ status: false, message: message });
                         }
