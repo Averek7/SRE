@@ -22,12 +22,12 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
         },
 
 
-        view_student_payment: function (student_id, callBack) {
+        view_student_payments: function (student_id, batch_id, callBack) {
             try {
                 payment = [];
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
-                    var cursor = db.db().collection(dbb.PAYMENT).find({ "student_id": student_id });
+                    var cursor = db.db().collection(dbb.PAYMENT).find({ "student_id": student_id, "batch_id": batch_id });
                     cursor.forEach(function (doc, err) {
                         if (err) {
                             callBack(null, true, err);
@@ -51,7 +51,7 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
             }
         },
 
-        
+
     }
 
     return payment_module;

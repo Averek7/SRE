@@ -223,7 +223,7 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
         },
 
 
-        view_batch_student: function (batch_id,callBack) {
+        view_batch_student: function (batch_id, callBack) {
             try {
                 students = [];
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
@@ -743,7 +743,7 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
         view_profile: function (user_id, callBack) {
             try {
                 exists = false;
-                result=''
+                result = ''
                 // user_token = false;
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
@@ -754,8 +754,8 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                             db.close();
                         }
                         else {
-                            result=doc;
-                            exists=true;
+                            result = doc;
+                            exists = true;
                         }
                     }, function () {
 
@@ -780,14 +780,13 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
                     var cursor = db.db().collection(dbb.USER).find({ "batch.batch_id": batch_id });
-                    cursor.count(function(doc,err) {
-                        if(err){
-                            callBack(err);
-                        }
-                        else{
-                            callBack(doc);
-
-                        }
+                    cursor.count(function (doc, err) {
+                        // if (err) {
+                        callBack(err);
+                        // }
+                        // else {
+                        //     callBack(doc);
+                        // }
                         db.close();
                     })
                     // callBack(cursor)
@@ -797,6 +796,99 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                 callBack(null, true, e);
             }
         },
+
+
+
+        get_batch: function (user_id, callBack) {
+            try {
+                exists = false;
+                result = []
+                // user_token = false;
+                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
+                    assert.equal(null, err);
+                    var cursor = db.db().collection(dbb.USER).find({ "_id": new ObjectID(user_id) });
+                    cursor.forEach(function (doc, err) {
+                        if (err) {
+                            callBack(null, true, err);
+                            db.close();
+                        }
+                        else {
+                            if (doc.batch.length != 0) {
+                                exists = true;
+                                for (var i = 0; i < doc.batch.length; i++) {
+                                    result.push(new ObjectID(doc.batch[i].batch_id));
+                                }
+                            }
+
+                        }
+                    }, function () {
+
+                        if (exists) {
+                            callBack(result, false, "User Found");
+                        }
+                        else {
+                            callBack(result, true, "No Batch Found");
+                        }
+                        db.close();
+                    })
+                })
+            } catch (e) {
+                callBack(null, true, e);
+            }
+        },
+
+        get_hostel_fees: function (batch_id, student_id, callBack) {
+            try {
+                // batch = [];
+                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
+                    assert.equal(null, err);
+                    var cursor = db.db().collection(dbb.USER).find({ "_id": new ObjectID(student_id), "batch.batch_id": batch_id });
+                    cursor.forEach(function (doc, err) {
+                        if (err) {
+                            callBack(null, true, err);
+                            db.close();
+                        }
+                        else {
+                            callBack(doc.batch[0].hostel_amount, false, "Batch_found");
+                        }
+                    })
+                })
+            } catch (e) {
+                callBack(null, true, e);
+            }
+        },
+
+
+        // view_student_details: function (callBack) {
+        //     try {
+        //         students = [];
+        //         mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
+        //             assert.equal(null, err);
+        //             var cursor = db.db().collection(dbb.USER).find({ "type": "S" });
+        //             cursor.forEach(function (doc, err) {
+        //                 if (err) {
+        //                     callBack(null, true, err);
+        //                     db.close();
+        //                 }
+        //                 else {
+        //                     students.push(doc);
+        //                 }
+        //             }, function () {
+        //                 if (students.length == 0) {
+        //                     callBack(null, true, "No Student's Found");
+        //                 }
+        //                 else {
+        //                     callBack(students, false, "Students Found");
+        //                 }
+        //                 db.close();
+        //             })
+        //         })
+        //     } catch (e) {
+        //         callBack(null, true, e);
+        //     }
+        // },
+
+
 
 
         //End of edit profile

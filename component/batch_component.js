@@ -237,7 +237,63 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
             } catch (e) {
                 callBack(null, true, e);
             }
-        }
+        },
+
+
+
+
+        view_student_batch_details: function (batch_id, callBack) {
+            try {
+                batch = [];
+                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
+                    assert.equal(null, err);
+                    var cursor = db.db().collection(dbb.BATCH).find({ "_id": { "$in" :batch_id} });
+                    cursor.forEach(function (doc, err) {
+                        if (err) {
+                            callBack(null, true, err);
+                            db.close();
+                            // console.log(err);
+                            // console.log(doc)
+                        }
+                        else {
+                            batch.push(doc);
+                        }
+                    }, function () {
+                        if (batch.length == 0) {
+                            callBack(null, true, "Batch Not Found");
+                        }
+                        else {
+                            callBack(batch, false, "Batch Found");
+                        }
+                        db.close();
+                    })
+                })
+            } catch (e) {
+                callBack(null, true, e);
+            }
+        },
+
+        get_batch_price: function (batch_id, callBack) {
+            try {
+                batch = [];
+                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
+                    assert.equal(null, err);
+                    var cursor = db.db().collection(dbb.BATCH).find({ "_id": new ObjectID(batch_id)});
+                    cursor.forEach(function (doc, err) {
+                        if (err) {
+                            callBack(null, true, err);
+                            db.close();
+                        }
+                        else {
+                            callBack(doc.batch_price,false,"Batch_found");
+                        }
+                    })
+                })
+            } catch (e) {
+                callBack(null, true, e);
+            }
+        },
+
 
         //End of View all Students
 

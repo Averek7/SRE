@@ -5,7 +5,9 @@ module.exports = {
     configure: function (app, mongo, ObjectID, url, assert, dbb) {
         var student_module = require('../component/student_component')(mongo, ObjectID, url, assert, dbb);
         var batch_module = require('../component/batch_component')(mongo, ObjectID, url, assert, dbb);
-
+        var payment_module = require('../component/payment_component')(mongo, ObjectID, url, assert, dbb);
+        var subject_module = require('../component/subject_component')(mongo, ObjectID, url, assert, dbb);
+        var attendance_module = require('../component/attendance_component')(mongo, ObjectID, url, assert, dbb);
         // var admin_module = require('../../component/admin_module')(mongo, ObjectID, url, assert, dbb);
 
         app.post('/login_email', function (req, res) {
@@ -69,7 +71,7 @@ module.exports = {
         app.post('/add_student', function (req, res) {
             try {
                 if (req.body.hasOwnProperty("student_name") && req.body.hasOwnProperty("email") && req.body.hasOwnProperty("student_dob") && req.body.hasOwnProperty("institute_name") && req.body.hasOwnProperty("education") &&
-                    req.body.hasOwnProperty("phone_no") && req.body.hasOwnProperty("batch_id") && req.body.hasOwnProperty("advance_amount")  && req.body.hasOwnProperty("father_name") && req.body.hasOwnProperty("roll_no") && req.body.hasOwnProperty("father_occupation")) {
+                    req.body.hasOwnProperty("phone_no") && req.body.hasOwnProperty("batch_id") && req.body.hasOwnProperty("father_name") && req.body.hasOwnProperty("roll_no") && req.body.hasOwnProperty("father_occupation")) {
                     var user = {};
                     jwt.sign({ user }, 'secretkey', (err, user_token) => {
                         student_module.student_exists(req.body.email, function (result, exists, message) {
@@ -84,7 +86,7 @@ module.exports = {
                                     institute_name: req.body.institute_name,
                                     education: req.body.education,
                                     phone_no: req.body.phone_no,
-                                    batch: [{ batch_id: req.body.batch_id, hostel_amount: req.body.hostel_amount, paid: [{"amount": req.body.advance_amount,comment:"Advance"}]}],  
+                                    batch: [{ batch_id: req.body.batch_id, hostel_amount: req.body.hostel_amount }],
                                     father_name: req.body.father_name,
                                     roll_no: req.body.roll_no,
                                     father_occupation: req.body.father_occupation,
@@ -316,7 +318,7 @@ module.exports = {
                     })
                 }
                 else {
-                    if (req.body.hasOwnProperty("batch_id")===false){
+                    if (req.body.hasOwnProperty("batch_id") === false) {
                         res.json({ status: false, message: "Batch Id Parameter is missing" });
                     }
                 }
@@ -381,7 +383,7 @@ module.exports = {
             try {
                 student_module.view_profile(req.body.user_id, function (result, error, message) {
                     if (error) {
-                        res.json({ status: false, message: message,result });
+                        res.json({ status: false, message: message, result });
                     }
                     else {
                         res.json({ status: true, message: message, result: result });
@@ -396,6 +398,144 @@ module.exports = {
                 res.json({ status: false, Message: er });
             }
         });
+
+
+
+
+        app.post('/view_student_batches', function (req, res) {
+            try {
+                student_module.get_batch(req.body.user_id, function (batches, error, message) {
+                    if (error) {
+                        res.json({ status: false, message: message });
+                    }
+                    else {
+                        batch_module.view_student_batch_details(batches, function (result, err, message) {
+                            if (err) {
+                                res.json({ status: false, message: message, result });
+                            }
+                            else {
+                                res.json({ status: true, message: message, result: result });
+                            }
+                        })
+                    }
+                })
+            }
+            catch (er) {
+                console.log("error occured : " + er);
+                res.json({ status: false, Message: er });
+            }
+        });
+
+
+
+
+        app.post('/view_student_payments', function (req, res) {
+            try {
+                batch_module.get_batch_price(req.body.batch_id, function (price, error, message) {
+                    if (error) {
+                        res.json({ status: false, message: message });
+                    }
+                    else {
+                        student_module.get_hostel_fees(req.body.batch_id, req.body.user_id, function (hostel, err, message) {
+                            if (err) {
+                                res.json({ status: false, message: message });
+                            }
+                            else {
+                                payment_module.view_student_payments(req.body.batch_id, req.body.user_id, function (payments, er, message) {
+                                    if (er) {
+                                        res.json({ status: false, message: message,result:{ batch_price: price, hostel_fee: hostel,payments:[]} });
+                                    }
+                                    else {
+                                        res.json({ status: true, message: message, result: { batch_price: price, hostel_fee: hostel, payments: payments } })
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            }
+            catch (er) {
+                console.log("error occured : " + er);
+                res.json({ status: false, Message: er });
+            }
+        });
+
+
+
+        app.post('/view_student_attendance', function (req, res) {
+            try {
+                attendance_module.count_batch_class(req.body.batch_id, req.body.user_id, function (total_class, error, message) {
+                    if (error) {
+                        res.json({ status: false, message: message });
+                    }
+                    else {
+                        attendance_module.count_student_present(req.body.batch_id, req.body.user_id, function (total_presents, err, message) {
+
+                            if (err) {
+                                res.json({ status: false, message: message });
+                            }
+                            else {
+                                subject_module.view_batch_subject(req.body.batch_id, function (subjects, er, message) {
+
+                                    if (er) {
+                                        res.json({ status: false, message: message });
+                                    }
+                                    else {
+                                        var i = 0;
+                                        for (; i < subjects.length; i++) {
+                                            attendance_module.count_subject_class(new ObjectID(subjects[i]._id).toString(), req.body.user_id, function (total_subject) {
+                                                // subjects[i].total_class = 0;
+
+                                                // subjects[i].total_class = total_subject;
+                                                
+                                            });
+                                            attendance_module.count_student_present_subject(new ObjectID(subjects[i]._id).toString(), req.body.user_id, function (student_subject) {
+                                                // subjects[i].total_present = 0;
+                                                // subjects[i].total_present = student_subject.toString();
+                                            });
+                                            // console.log(subjects);
+                                            
+                                        }
+                                        if (i == (subjects.length) - 1) {
+                                            res.json({ status: true, message: message, result: { total_class: total_class, total_present: total_presents, subjects: subjects } });
+                                        }
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            }
+            catch (er) {
+                console.log("error occured : " + er);
+                res.json({ status: false, Message: er });
+            }
+        });
+
+
+        // app.post('/view_student_batches_details', function (req, res) {
+        //     try {
+        //         student_module.get_batch(req.body.user_id, function (batches, error, message) {
+        //             if (error) {
+        //                 res.json({ status: false, message: message });
+        //             }
+        //             else {
+        //                 batch_module.view_student_batch_details(batches, function (result, err, message) {
+        //                     if (err) {
+        //                         res.json({ status: false, message: message, batches });
+        //                     }
+        //                     else {
+        //                         res.json({ status: true, message: message, result: result });
+        //                     }
+        //                 })
+        //             }
+        //         })
+        //     }
+        //     catch (er) {
+        //         console.log("error occured : " + er);
+        //         res.json({ status: false, Message: er });
+        //     }
+        // });
 
     }
 }

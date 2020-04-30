@@ -24,6 +24,7 @@ module.exports = {
                                     password:'Pass1234',
                                     profilepic:"",
                                     type: 'T',
+                                    token:''
                                     // active: true
                                 };
                                 trainer_module.add_trainer(new_trainer, function (result, error, message) {
