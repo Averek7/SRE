@@ -732,7 +732,8 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                                 callBack(result, false, "Profile Edited Successful");
                             }
                             db.close();
-                        });
+                        }
+                    );
                 });
             } catch (e) {
                 callBack(null, true, e);
@@ -772,6 +773,49 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                 callBack(null, true, e);
             }
         },
+        change_password: function (user_id, old_pass, new_pass, callBack) {
+            try {
+                exists = false;
+
+                // user_token = false;
+                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
+                    assert.equal(null, err);
+                    var cursor = db.db().collection(dbb.USER).find({ "_id": new ObjectID(user_id) });
+                    cursor.forEach(function (doc, err) {
+                        if (err) {
+                            callBack(true, err);
+                            db.close();
+                        }
+                        else {
+                            if (old_pass == doc.password) {
+                                db.db().collection(dbb.USER).updateOne({ "_id": new ObjectID(user_id) },
+                                    {
+                                        $set:
+                                        {
+                                            password:new_pass
+                                        }
+                                    },
+                                    { upsert: false }, function (errr, result) {
+                                        if (errr) {
+                                            callBack(true, errr);
+                                        } else {
+                                            callBack(false, "Password Changed Successful");
+                                        }
+                                        db.close();
+                                    }
+                                );
+
+                            }
+                            else{
+                                callBack(true, "Old Password did not match");
+                            }
+                        }
+                    })
+                })
+            } catch (e) {
+                callBack(null, true, e);
+            }
+        },
 
 
         count_batch_strength: function (batch_id, callBack) {
@@ -802,7 +846,7 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
         get_batch: function (user_id, callBack) {
             try {
                 exists = false;
-                result = []
+                result = '';
                 // user_token = false;
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
@@ -816,7 +860,7 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                             if (doc.batch.length != 0) {
                                 exists = true;
                                 for (var i = 0; i < doc.batch.length; i++) {
-                                    result.push(new ObjectID(doc.batch[i].batch_id));
+                                    result=doc.batch[i].batch_id;
                                 }
                             }
 

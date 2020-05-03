@@ -147,7 +147,7 @@ module.exports = {
 
         app.post('/signup', function (req, res) {
             try {
-                if (req.body.hasOwnProperty("student_name") && req.body.hasOwnProperty("email") && req.body.hasOwnProperty("student_age") && req.body.hasOwnProperty("institute_name") && req.body.hasOwnProperty("education") &&
+                if (req.body.hasOwnProperty("student_name") && req.body.hasOwnProperty("email") && req.body.hasOwnProperty("student_dob") && req.body.hasOwnProperty("institute_name") && req.body.hasOwnProperty("education") &&
                     req.body.hasOwnProperty("phone_no") && req.body.hasOwnProperty("father_name") && req.body.hasOwnProperty("father_occupation")) {
                     var user = {};
                     jwt.sign({ user }, 'secretkey', (err, user_token) => {
@@ -157,17 +157,18 @@ module.exports = {
                             }
                             else {
                                 var new_student = {
-                                    student_name: req.body.student_name,
+                                    user_token:'user_token',
+                                    name: req.body.student_name,
                                     student_image: req.body.student_image,
                                     email: req.body.email,
-                                    student_age: req.body.student_age,
+                                    student_dob: req.body.student_dob,
                                     institute_name: req.body.institute_name,
                                     education: req.body.education,
                                     phone_no: req.body.phone_no,
-                                    batch: [{ batch: req.body.batch, batch_type: req.body.batch_type }],
-                                    amount: [{ comment: "Advance", amount: req.body.advance_amount }],
+                                    batch: [],
+                                    // amount: [{ comment: "Advance", amount: req.body.advance_amount }],
                                     father_name: req.body.father_name,
-                                    roll_no: req.body.roll_no,
+                                    // roll_no: req.body.roll_no,
                                     father_occupation: req.body.father_occupation,
                                     user_token: user_token,
                                     password: req.body.password,
@@ -409,7 +410,7 @@ module.exports = {
                         res.json({ status: false, message: message });
                     }
                     else {
-                        batch_module.view_student_batch_details(batches, function (result, err, message) {
+                        batch_module.view_student_batch_detail(batches, function (result, err, message) {
                             if (err) {
                                 res.json({ status: false, message: message, result });
                             }
@@ -443,7 +444,7 @@ module.exports = {
                             else {
                                 payment_module.view_student_payments(req.body.batch_id, req.body.user_id, function (payments, er, message) {
                                     if (er) {
-                                        res.json({ status: false, message: message,result:{ batch_price: price, hostel_fee: hostel,payments:[]} });
+                                        res.json({ status: false, message: message, result: { batch_price: price, hostel_fee: hostel, payments: [] } });
                                     }
                                     else {
                                         res.json({ status: true, message: message, result: { batch_price: price, hostel_fee: hostel, payments: payments } })
@@ -464,6 +465,11 @@ module.exports = {
 
         app.post('/view_student_attendance', function (req, res) {
             try {
+                var i = 0;
+                var subject = [];
+                var data;
+                var total_c = 0;
+                var total_p = 0;
                 attendance_module.count_batch_class(req.body.batch_id, req.body.user_id, function (total_class, error, message) {
                     if (error) {
                         res.json({ status: false, message: message });
@@ -475,30 +481,13 @@ module.exports = {
                                 res.json({ status: false, message: message });
                             }
                             else {
-                                subject_module.view_batch_subject(req.body.batch_id, function (subjects, er, message) {
+                                subject_module.view_batch_attendances(req.body.batch_id, req.body.user_id, function (subjects, er, message) {
 
                                     if (er) {
                                         res.json({ status: false, message: message });
                                     }
                                     else {
-                                        var i = 0;
-                                        for (; i < subjects.length; i++) {
-                                            attendance_module.count_subject_class(new ObjectID(subjects[i]._id).toString(), req.body.user_id, function (total_subject) {
-                                                // subjects[i].total_class = 0;
-
-                                                // subjects[i].total_class = total_subject;
-                                                
-                                            });
-                                            attendance_module.count_student_present_subject(new ObjectID(subjects[i]._id).toString(), req.body.user_id, function (student_subject) {
-                                                // subjects[i].total_present = 0;
-                                                // subjects[i].total_present = student_subject.toString();
-                                            });
-                                            // console.log(subjects);
-                                            
-                                        }
-                                        if (i == (subjects.length) - 1) {
-                                            res.json({ status: true, message: message, result: { total_class: total_class, total_present: total_presents, subjects: subjects } });
-                                        }
+                                        res.json({ status: true, message: message, result: { total_class: total_class, total_present: total_presents, subjects: subjects } });
                                     }
                                 })
                             }
@@ -513,29 +502,74 @@ module.exports = {
         });
 
 
-        // app.post('/view_student_batches_details', function (req, res) {
-        //     try {
-        //         student_module.get_batch(req.body.user_id, function (batches, error, message) {
-        //             if (error) {
-        //                 res.json({ status: false, message: message });
-        //             }
-        //             else {
-        //                 batch_module.view_student_batch_details(batches, function (result, err, message) {
-        //                     if (err) {
-        //                         res.json({ status: false, message: message, batches });
-        //                     }
-        //                     else {
-        //                         res.json({ status: true, message: message, result: result });
-        //                     }
-        //                 })
-        //             }
-        //         })
-        //     }
-        //     catch (er) {
-        //         console.log("error occured : " + er);
-        //         res.json({ status: false, Message: er });
-        //     }
-        // });
+        app.post('/view_student_batches_details', function (req, res) {
+            try {
+                student_module.get_batch(req.body.user_id, function (batch_id, error, message) {
+                    if (error) {
+                        res.json({ status: false, message: message });
+                    }
+                    else {
+                        batch_module.view_student_batch_details(batch_id, function (result, err, message) {
+                            if (err) {
+                                res.json({ status: false, message: message });
+                            }
+                            else {
+                                // res.json({ status: true, message: message, result: result });
+                                subject_module.view_batch_subject(batch_id,function (subject,er,message) {
+                                    if(er){
+                                        res.json({status:true,message:message,result:{"batch_details":result,subject:[]}})
+                                    }
+                                    else{
+                                        res.json({ status: true, message: message, result: { batch_details: result, subject: subject} });
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            }
+            catch (er) {
+                console.log("error occured : " + er);
+                res.json({ status: false, Message: er });
+            }
+        });
+
+        app.post('/change_password', function (req, res) {
+            try {
+                if (req.body.hasOwnProperty("user_id") && req.body.hasOwnProperty("old_password") && req.body.hasOwnProperty("new_password") && req.body.hasOwnProperty("confirm_password")) {
+                    if (req.body.old_password !== req.body.new_password) {
+                        if (req.body.new_password == req.body.confirm_password) {
+                            student_module.change_password(req.body.user_id, req.body.old_password, req.body.new_password, function (error, message) {
+                                res.json({ status: !(error), message: message });
+                            })
+                        }
+                        else {
+                            res.json({ status: false, message: "New and Conirm password are different" });
+                        }
+                    }
+                    else {
+                        res.json({ status: false, message: "New Password cannot be same as old" });
+                    }
+                }
+                else {
+                    if (req.body.hasOwnProperty("user_id") == false) {
+                        res.json({ status: false, message: "id parameter is missing" });
+                    }
+                    else if (req.body.hasOwnProperty("old_password") == false) {
+                        res.json({ status: false, message: "Old Password parameter is missing" });
+                    }
+                    else if (req.body.hasOwnProperty("new_password") == false) {
+                        res.json({ status: false, message: "New Password parameter is missing" });
+                    }
+                    else if (req.body.hasOwnProperty("confirm_password") == false) {
+                        res.json({ status: false, message: "Confirm Password parameter is missing" });
+                    }
+                }
+            } catch (er) {
+                console.log("error occured : " + er);
+                res.json({ status: false, Message: "failed at try" });
+            }
+        });
 
     }
 }

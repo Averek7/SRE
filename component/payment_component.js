@@ -22,7 +22,7 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
         },
 
 
-        view_student_payments: function (student_id, batch_id, callBack) {
+        view_student_payments: function (batch_id, student_id, callBack) {
             try {
                 payment = [];
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
@@ -38,7 +38,7 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                         }
                     }, function () {
                         if (payment.length == 0) {
-                            callBack(null, true, "No payment's Found In This Course");
+                            callBack([], true, "No payment's Found In This Course");
                         }
                         else {
                             callBack(payment, false, "payment Found");

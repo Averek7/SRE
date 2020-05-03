@@ -2,13 +2,13 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
     var subject_module = {
 
         //Start of subject Exists
-        subject_exists: function (subject_name,batch_id, callBack) {
+        subject_exists: function (subject_name, batch_id, callBack) {
             try {
                 exists = false;
                 user_token = false;
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
-                    var cursor = db.db().collection(dbb.SUBJECT).find({ "subject_name": subject_name,"batch_id":batch_id });
+                    var cursor = db.db().collection(dbb.SUBJECT).find({ "subject_name": subject_name, "batch_id": batch_id });
                     cursor.forEach(function (doc, err) {
                         assert.equal(null, err);
                         exists = true;
@@ -79,10 +79,10 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
 
 
 
-        
 
 
-        
+
+
 
         //Start of Delete subject
         delete_subject: function (subject_id, callBack) {
@@ -136,6 +136,54 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                             callBack(subject, false, "subject Found");
                         }
                         db.close();
+                    })
+                })
+            } catch (e) {
+                callBack(null, true, e);
+            }
+        },
+
+
+        view_batch_attendances: function (batch_id, student_id, callBack) {
+            try {
+                subject = [];
+                subject_ids = [];
+                subject_id = "";
+                subject_name = "";
+                student_id=student_id;
+                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
+                    assert.equal(null, err);
+                    var cursor = db.db().collection(dbb.SUBJECT).find({ "batch_id": batch_id });
+                    cursor.forEach(function (doc, err) {
+                        if (err) {
+                            callBack(null, true, err);
+                            db.close();
+                        }
+                        else {
+                            subject_id = (doc._id).toString();
+                            subject_ids.push(subject_id);
+                            subject_name = doc.subject_name;
+                            // subject.push({ "_id": subject_id, "subject_name": subject_name});
+
+                        }
+                    }, function () {
+                        if (subject_ids.length == 0) {
+                            callBack(null, true, "No subject's Found In This Program");
+                            db.close();
+                        }
+                        else {
+
+                            db.db().collection(dbb.ATTENDANCE).find({ "subject_id": subject_id, "student_id": student_id }).count(function (err, doc2) {
+                                // if (err) {
+                                //     callBack(null, true, err);
+                                //     db.close();
+                                // }
+                                // else {
+                                subject.push({ "_id": subject_id, "subject_name": subject_name, "total_class": doc2 });
+                                // }
+                            })
+
+                        }
                     })
                 })
             } catch (e) {

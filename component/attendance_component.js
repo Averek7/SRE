@@ -20,23 +20,22 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
         },
 
 
-        count_subject_class: function (subject_id,student_id, callBack) {
+        count_subject_class: function (subject_id, student_id, callBack) {
             try {
                 // students = [];
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
-                    var cursor = db.db().collection(dbb.ATTENDANCE).find({ "subject_id": subject_id, "student_id": student_id });
-                    cursor.count(function (doc, err) {
+                    db.db().collection(dbb.ATTENDANCE).countDocuments({ "subject_id": subject_id, "student_id": student_id }, function (doc, err) {
                         // if (err) {
-                        callBack(err);
+                        console.log(err);
+                        callBack(err, false, "caculated");
                         // }
                         // else {
                         //     callBack(doc);
                         // }
                         db.close();
-                    })
-                    // callBack(cursor)
-                    db.close();
+                    });
+
                 })
             } catch (e) {
                 callBack(null, true, e);
@@ -48,8 +47,7 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                 // students = [];
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
-                    var cursor = db.db().collection(dbb.ATTENDANCE).find({ "subject_id": subject_id, "student_id": student_id,"present":true });
-                    cursor.count(function (doc, err) {
+                    db.db().collection(dbb.ATTENDANCE).find({ "subject_id": subject_id, "student_id": student_id, "present": true }).count(function (doc, err) {
                         // if (err) {
                         callBack(err);
                         // }
@@ -58,8 +56,6 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                         // }
                         db.close();
                     })
-                    // callBack(cursor)
-                    db.close();
                 })
             } catch (e) {
                 callBack(null, true, e);
@@ -97,7 +93,7 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                     var cursor = db.db().collection(dbb.ATTENDANCE).find({ "batch_id": batch_id, "student_id": student_id, "present": true });
                     cursor.count(function (doc, err) {
                         // if (err) {
-                        callBack(err);
+                        callBack(err, false, "caculated");
                         // }
                         // else {
                         //     callBack(doc);
@@ -106,6 +102,37 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                     })
                     // callBack(cursor)
                     db.close();
+                })
+            } catch (e) {
+                callBack(null, true, e);
+            }
+        },
+
+        view_student_attendance: function (subject_id, student_id, callBack) {
+            try {
+                attendance = [];
+                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
+                    assert.equal(null, err);
+                    var cursor = db.db().collection(dbb.ATTENDANCE).find({ "subject_id": subject_id, "student_id": student_id });
+                    cursor.forEach(function (doc, err) {
+                        if (err) {
+                            callBack(null, true, err);
+                            db.close();
+                        }
+                        else {
+                            attendance.push(doc);
+                        }
+                    }, function () {
+
+                        if (attendance.length == 0) {
+                            callBack([], false, "User Found");
+                            db.close();
+                        }
+                        else {
+                            callBack(attendance, true, "No Batch Found");
+                        }
+                        db.close();
+                    })
                 })
             } catch (e) {
                 callBack(null, true, e);

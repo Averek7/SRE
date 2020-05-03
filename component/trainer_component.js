@@ -105,7 +105,7 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
             try {
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
-                    db.db().collection(dbb.USERS).updateOne({ "_id": new ObjectID(id) }, {
+                    db.db().collection(dbb.USER).updateOne({ "_id": new ObjectID(id) }, {
                         $set: {
                             name: trainer_name,
                             // batch_type: batch_type,
