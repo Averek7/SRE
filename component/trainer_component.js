@@ -101,17 +101,21 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
         //End of Add Student
 
         //Start of Update Student
-        update_trainer: function (id, trainer_name, trainer_qualification, trainer_specialization, contact_no, callBack) {
+        update_trainer: function (id, trainer_name, dob, trainer_qualification, trainer_specialization, contact_no, trainer_designation, trainer_employee_code, trainer_bloodgroup, trainer_reporting_authority, callBack) {
             try {
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
                     db.db().collection(dbb.USER).updateOne({ "_id": new ObjectID(id) }, {
                         $set: {
                             name: trainer_name,
-                            // batch_type: batch_type,
+                            trainer_dob: dob,
                             contact_no: contact_no,
                             trainer_qualification: trainer_qualification,
                             trainer_specialization: trainer_specialization,
+                            trainer_designation: trainer_designation,
+                            trainer_employee_code: trainer_employee_code,
+                            trainer_bloodgroup: trainer_bloodgroup,
+                            trainer_reporting_authority: trainer_reporting_authority,
                             // trainer_expertise: trainer_expertise,
                             // college_name: college_name,
                             // degree: degree,
