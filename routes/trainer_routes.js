@@ -16,7 +16,7 @@ module.exports = {
                             else {
                                 var new_trainer = {
                                     name: req.body.trainer_name,
-                                    trainer_dob: req.body.dob,
+                                    trainer_dob: req.body.trainer_dob,
                                     trainer_qualification: req.body.trainer_qualification,
                                     trainer_specialization: req.body.trainer_specialization,
                                     email: req.body.email,
@@ -104,7 +104,7 @@ module.exports = {
         app.post('/update_trainer', function (req, res) {
             try {
                 if (req.body.hasOwnProperty("trainer_id") && req.body.hasOwnProperty("trainer_name") ) {
-                    trainer_module.update_trainer(req.body.trainer_id, req.body.trainer_name,req.body.dob, req.body.trainer_qualification, req.body.trainer_specialization, req.body.contact_no, req.body.trainer_designation, req.body.trainer_employee_code, req.body.trainer_bloodgroup, req.body.trainer_reporting_authority, function (result, error, message) {
+                    trainer_module.update_trainer(req.body.trainer_id, req.body.trainer_name, req.body.trainer_dob, req.body.trainer_qualification, req.body.trainer_specialization, req.body.contact_no, req.body.trainer_designation, req.body.trainer_employee_code, req.body.trainer_bloodgroup, req.body.trainer_reporting_authority, function (result, error, message) {
                         if (error) {
                             res.json({ status: false, message: message });
                         }
