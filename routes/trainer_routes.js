@@ -28,7 +28,8 @@ module.exports = {
                                     password:'Pass1234',
                                     profilepic:"",
                                     type: 'T',
-                                    token:''
+                                    user_token: user_token,
+                                    institution_id: "5ebdb92948b22d6965c55aeb",
                                     // active: true
                                 };
                                 trainer_module.add_trainer(new_trainer, function (result, error, message) {

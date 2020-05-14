@@ -8,6 +8,7 @@ var dbb = {
     PAYMENT: 'payments',
     ATTENDANCE:'attendances',
     MARK: 'marks',
+    INSTITUTION:'institutions'
 
 };
 
