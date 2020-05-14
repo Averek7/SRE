@@ -144,10 +144,10 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                     assert.equal(null, err);
                     db.db().collection(dbb.USER).insertOne(new_student, function (err, result) {
                         if (err) {
-                            callBack(null, false, "Error Occurred");
+                            callBack(null, true, "Error Occurred");
                         }
                         else {
-                            callBack(result, true, "Student Added Successfully");
+                            callBack(result, false, "Student Added Successfully");
                         }
                         db.close();
                     })

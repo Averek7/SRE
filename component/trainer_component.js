@@ -108,13 +108,13 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                     db.db().collection(dbb.USER).updateOne({ "_id": new ObjectID(id) }, {
                         $set: {
                             name: trainer_name,
-                            trainer_dob: dob,
+                            dob: dob,
                             contact_no: contact_no,
                             trainer_qualification: trainer_qualification,
                             trainer_specialization: trainer_specialization,
                             trainer_designation: trainer_designation,
                             trainer_employee_code: trainer_employee_code,
-                            trainer_bloodgroup: trainer_bloodgroup,
+                            blood_group: trainer_bloodgroup,
                             trainer_reporting_authority: trainer_reporting_authority,
                             // trainer_expertise: trainer_expertise,
                             // college_name: college_name,

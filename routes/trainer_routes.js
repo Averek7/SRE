@@ -16,13 +16,13 @@ module.exports = {
                             else {
                                 var new_trainer = {
                                     name: req.body.trainer_name,
-                                    trainer_dob: req.body.trainer_dob,
+                                    dob: req.body.trainer_dob,
                                     trainer_qualification: req.body.trainer_qualification,
                                     trainer_specialization: req.body.trainer_specialization,
                                     email: req.body.email,
                                     trainer_designation: req.body.trainer_designation,
                                     trainer_employee_code: req.body.trainer_employee_code,
-                                    trainer_bloodgroup: req.body.trainer_bloodgroup,
+                                    blood_group: req.body.trainer_bloodgroup,
                                     trainer_reporting_authority: req.body.trainer_reporting_authority,
                                     contact_no: req.body.contact_no,
                                     password:'Pass1234',

@@ -45,12 +45,12 @@ module.exports = {
                             res.json({ status: true, message: message, result: result });
                         }
                         else {
-                            student_module.add_student({ email: req.body.email, password: "Pass1234", type: "S", profilepic: req.body.profilepic }, function (result, status, msg) {
-                                if (status) {
-                                    res.json({ status: true, message: message, result: result });
+                            student_module.add_student({ email: req.body.email, password: "Pass1234", type: "S", profilepic: req.body.profilepic }, function (result, error, message) {
+                                if (error) {
+                                    res.json({ status: false, message: message });
                                 }
                                 else {
-                                    res.json({ status: flase, message: message });
+                                    res.json({ status: true, message: message, result: result });
                                 }
                             })
                         }
@@ -70,8 +70,8 @@ module.exports = {
 
         app.post('/add_student', function (req, res) {
             try {
-                if (req.body.hasOwnProperty("student_name") && req.body.hasOwnProperty("email") && req.body.hasOwnProperty("student_dob") && req.body.hasOwnProperty("institute_name") && req.body.hasOwnProperty("education") &&
-                    req.body.hasOwnProperty("phone_no") && req.body.hasOwnProperty("batch_id") && req.body.hasOwnProperty("father_name") && req.body.hasOwnProperty("roll_no") && req.body.hasOwnProperty("father_occupation")) {
+                if (req.body.hasOwnProperty("name") && req.body.hasOwnProperty("email") && req.body.hasOwnProperty("student_dob") && req.body.hasOwnProperty("institute_name") && req.body.hasOwnProperty("education") &&
+                    req.body.hasOwnProperty("phone_no") && req.body.hasOwnProperty("batch_id") && req.body.hasOwnProperty("father_name") && req.body.hasOwnProperty("roll_no") && req.body.hasOwnProperty("father_contact_no")) {
                     var user = {};
                     jwt.sign({ user }, 'secretkey', (err, user_token) => {
                         student_module.student_exists(req.body.email, function (result, exists, message) {
@@ -82,14 +82,15 @@ module.exports = {
                                 var new_student = {
                                     name: req.body.student_name,
                                     email: req.body.email,
-                                    student_dob: req.body.student_dob,
+                                    dob: req.body.student_dob,
+                                    blood_group: req.body.blood_group,
                                     institute_name: req.body.institute_name,
                                     education: req.body.education,
-                                    phone_no: req.body.phone_no,
-                                    batch: [{ batch_id: req.body.batch_id, hostel_amount: req.body.hostel_amount }],
+                                    contact_no: req.body.phone_no,
+                                    batch: [{ batch_id: req.body.batch_id, hostel_amount: req.body.hostel_amount, roll_no: req.body.roll_no }],
                                     father_name: req.body.father_name,
-                                    roll_no: req.body.roll_no,
-                                    father_occupation: req.body.father_occupation,
+                                    hometown: req.body.hometown,
+                                    father_contact_no: req.body.father_contact_no,
                                     user_token: user_token,
                                     password: 'Pass1234',
                                     type: 'S',
@@ -100,7 +101,7 @@ module.exports = {
                                         res.json({ status: false, message: message });
                                     }
                                     else {
-                                        res.json({ status: true, message: message, result: result.insertedId, user_token: user_token });
+                                        res.json({ status: true, message: message, result: result });
                                     }
                                 })
                             }
@@ -114,27 +115,16 @@ module.exports = {
                     else if (req.body.hasOwnProperty("email") == false) {
                         res.json({ status: false, message: "email parameter is missing" });
                     }
-                    else if (req.body.hasOwnProperty("contact_no") == false) {
+                    else if (req.body.hasOwnProperty("phone_no") == false) {
                         res.json({ status: false, message: "contact_no parameter is missing" });
                     }
                     else if (req.body.hasOwnProperty("education") == false) {
                         res.json({ status: false, message: "education parameter is missing" });
                     }
-                    else if (req.body.hasOwnProperty("college_name") == false) {
+                    else if (req.body.hasOwnProperty("institute_name") == false) {
                         res.json({ status: false, message: "college_name parameter is missing" });
                     }
-                    else if (req.body.hasOwnProperty("degree") == false) {
-                        res.json({ status: false, message: "degree parameter is missing" });
-                    }
-                    else if (req.body.hasOwnProperty("branch") == false) {
-                        res.json({ status: false, message: "branch parameter is missing" });
-                    }
-                    else if (req.body.hasOwnProperty("interested_area") == false) {
-                        res.json({ status: false, message: "interested_area parameter is missing" });
-                    }
-                    else if (req.body.hasOwnProperty("additional_info") == false) {
-                        res.json({ status: false, message: "additional_info parameter is missing" });
-                    }
+                    
                 }
             } catch (er) {
                 console.log("error occured : " + er);
@@ -157,19 +147,17 @@ module.exports = {
                             }
                             else {
                                 var new_student = {
-                                    user_token:'user_token',
                                     name: req.body.student_name,
-                                    student_image: req.body.student_image,
                                     email: req.body.email,
-                                    student_dob: req.body.student_dob,
+                                    dob: req.body.student_dob,
+                                    blood_group: req.body.blood_group,
                                     institute_name: req.body.institute_name,
                                     education: req.body.education,
-                                    phone_no: req.body.phone_no,
-                                    batch: [],
-                                    // amount: [{ comment: "Advance", amount: req.body.advance_amount }],
+                                    contact_no: req.body.phone_no,
+                                    // batch: [{ batch_id: req.body.batch_id, hostel_amount: req.body.hostel_amount, roll_no: req.body.roll_no }],
                                     father_name: req.body.father_name,
-                                    // roll_no: req.body.roll_no,
-                                    father_occupation: req.body.father_occupation,
+                                    hometown: req.body.hometown,
+                                    father_contact_no: req.body.father_contact_no,
                                     user_token: user_token,
                                     password: req.body.password,
                                     type: 'S',
