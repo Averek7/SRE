@@ -94,6 +94,7 @@ module.exports = {
                                     user_token: user_token,
                                     password: 'Pass1234',
                                     type: 'S',
+                                    profilepic:" ",
                                     institution_id: "5ebdb92948b22d6965c55aeb",
                                     active: true
                                 };
