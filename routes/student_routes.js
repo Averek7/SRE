@@ -70,7 +70,7 @@ module.exports = {
 
         app.post('/add_student', function (req, res) {
             try {
-                if (req.body.hasOwnProperty("name") && req.body.hasOwnProperty("email") && req.body.hasOwnProperty("student_dob") && req.body.hasOwnProperty("institute_name") && req.body.hasOwnProperty("education") &&
+                if (req.body.hasOwnProperty("student_name") && req.body.hasOwnProperty("email") && req.body.hasOwnProperty("student_dob") && req.body.hasOwnProperty("institute_name") && req.body.hasOwnProperty("education") &&
                     req.body.hasOwnProperty("phone_no") && req.body.hasOwnProperty("batch_id") && req.body.hasOwnProperty("father_name") && req.body.hasOwnProperty("roll_no") && req.body.hasOwnProperty("father_contact_no")) {
                     var user = {};
                     jwt.sign({ user }, 'secretkey', (err, user_token) => {
@@ -111,7 +111,7 @@ module.exports = {
                     });
                 }
                 else {
-                    if (req.body.hasOwnProperty("name") == false) {
+                    if (req.body.hasOwnProperty("student_name") == false) {
                         res.json({ status: false, message: "name parameter is missing" });
                     }
                     else if (req.body.hasOwnProperty("email") == false) {
