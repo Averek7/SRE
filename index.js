@@ -8,18 +8,8 @@ var cors = require('cors');
 var ObjectID = require('mongodb').ObjectID;
 
 // //ROUTES
-var studentroute = require('./routes/student_routes');
-var batchroute = require('./routes/batch_routes');
-var trainerroute = require('./routes/trainer_routes');
-var courseroute = require('./routes/course_routes');
-var programroute = require('./routes/program_routes');
-var subjectroute = require('./routes/subject_routes');
-var paymentroute = require('./routes/payment_routes');
-var attendanceroute = require('./routes/attendance_routes');
-var markroute = require('./routes/mark_routes');
-
-
-
+var deatilsroute = require('./routes/details_routes');
+var eventsroute = require('./routes/events_routes');
 var dbb = require('./configuration/collection');
 
 //Configuring Port
@@ -27,7 +17,6 @@ app.set('port', (process.env.PORT || 8000));
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
 
 app.listen(app.get('port'), function () {
     console.log('Node app is running on port', app.get('port'));
@@ -44,15 +33,8 @@ if (prod) {
 }
 
 //Configuring Routes
-programroute.configure(app,mongo,ObjectID,url,assert,dbb);
-courseroute.configure(app, mongo, ObjectID, url, assert, dbb);
-studentroute.configure(app, mongo, ObjectID, url, assert, dbb);
-batchroute.configure(app, mongo, ObjectID, url, assert, dbb);
-trainerroute.configure(app, mongo, ObjectID, url, assert, dbb);
-subjectroute.configure(app, mongo, ObjectID, url, assert, dbb);
-paymentroute.configure(app, mongo, ObjectID, url, assert, dbb);
-attendanceroute.configure(app, mongo, ObjectID, url, assert, dbb);
-markroute.configure(app, mongo, ObjectID, url, assert, dbb);
+deatilsroute.configure(app, mongo, ObjectID, url, assert, dbb);
+eventsroute.configure(app, mongo, ObjectID, url, assert, dbb);
 
 
 app.get('/', function (req, res) {
