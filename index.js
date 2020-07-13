@@ -38,5 +38,5 @@ eventsroute.configure(app, mongo, ObjectID, url, assert, dbb);
 
 
 app.get('/', function (req, res) {
-    res.send("WELCOME TO Skyyrider API'S");
+    res.send("WELCOME TO Panda Machine Care API'S");
 });
