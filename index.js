@@ -10,6 +10,7 @@ var ObjectID = require('mongodb').ObjectID;
 // //ROUTES
 var deatilsroute = require('./routes/details_routes');
 var eventsroute = require('./routes/events_routes');
+var studentroute = require("./routes/newstudent_routes");
 var dbb = require('./configuration/collection');
 
 //Configuring Port
@@ -24,8 +25,8 @@ app.listen(app.get('port'), function () {
 
 //CHANGE PROD TO FALSE IF YOU WANT TO RUN THE
 //APP ON THE LOCAL MACHINE
-var prod = true;
-// var url = "mongodb://localhost:27017/nextstacks";
+var prod = false;
+var url = "mongodb://localhost:27017/nextstacks";
 
 if (prod) {
     var prod_url = require('./configuration/connection');
@@ -35,6 +36,7 @@ if (prod) {
 //Configuring Routes
 deatilsroute.configure(app, mongo, ObjectID, url, assert, dbb);
 eventsroute.configure(app, mongo, ObjectID, url, assert, dbb);
+studentroute.configure(app, mongo, ObjectID, url, assert, dbb);
 
 
 app.get('/', function (req, res) {
