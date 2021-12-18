@@ -10,6 +10,8 @@ var ObjectID = require('mongodb').ObjectID;
 // //ROUTES
 var deatilsroute = require('./routes/details_routes');
 var eventsroute = require('./routes/events_routes');
+var templateeroute = require('./routes/template_route');
+var accountroute = require('./routes/accounts_routes');
 var dbb = require('./configuration/collection');
 
 //Configuring Port
@@ -34,9 +36,11 @@ if (prod) {
 
 //Configuring Routes
 deatilsroute.configure(app, mongo, ObjectID, url, assert, dbb);
+accountroute.configure(app, mongo, ObjectID, url, assert, dbb);
+templateeroute.configure(app, mongo, ObjectID, url, assert, dbb);
 eventsroute.configure(app, mongo, ObjectID, url, assert, dbb);
 
 
 app.get('/', function (req, res) {
-    res.send("WELCOME TO Panda Machine Care API'S");
+    res.send("WELCOME TO Technoboot SMS API'S");
 });

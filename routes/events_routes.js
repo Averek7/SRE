@@ -8,6 +8,7 @@ module.exports = {
 
         app.post('/add_event', function (req, res) {
             try {
+                
                 var new_event = {
                     // name: req.body.student_name,
                     image: req.body.image,
