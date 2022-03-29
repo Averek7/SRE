@@ -8,10 +8,9 @@ var cors = require('cors');
 var ObjectID = require('mongodb').ObjectID;
 
 // //ROUTES
-var deatilsroute = require('./routes/details_routes');
-var eventsroute = require('./routes/events_routes');
-var templateeroute = require('./routes/template_route');
-var accountroute = require('./routes/accounts_routes');
+var userroute = require('./routes/user_routes');
+var leadroute = require('./routes/lead_routes');
+
 var dbb = require('./configuration/collection');
 
 //Configuring Port
@@ -35,12 +34,11 @@ if (prod) {
 }
 
 //Configuring Routes
-deatilsroute.configure(app, mongo, ObjectID, url, assert, dbb);
-accountroute.configure(app, mongo, ObjectID, url, assert, dbb);
-templateeroute.configure(app, mongo, ObjectID, url, assert, dbb);
-eventsroute.configure(app, mongo, ObjectID, url, assert, dbb);
+userroute.configure(app, mongo, ObjectID, url, assert, dbb);
+leadroute.configure(app, mongo, ObjectID, url, assert, dbb);
+
 
 
 app.get('/', function (req, res) {
-    res.send("WELCOME TO Technoboot SMS API'S");
+    res.send("WELCOME To SKYY RIDER ELECTRIC LEAD API'S");
 });
