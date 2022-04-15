@@ -49,6 +49,36 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                 callBack(null, true, e);
             }
         },
+
+        view_today_user_lead: function (user_id,date, callBack) {
+            try {
+                lead = [];
+                mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
+                    assert.equal(null, err);
+                    var cursor = db.db().collection(dbb.LEAD).find({ 'user_id': user_id, 'date':date });
+                    cursor.forEach(function (doc, err) {
+                        if (err) {
+                            callBack(null, true, err);
+                            db.close();
+                        }
+                        else {
+                            lead.push(doc);
+                        }
+                    }, function () {
+                        if (lead.length === 0) {
+                            callBack('', true, "No Lead Found");
+
+                        } else {
+                            callBack(lead, false, "Lead Found");
+
+                        }
+                        db.close();
+                    })
+                })
+            } catch (e) {
+                callBack(null, true, e);
+            }
+        },
     }
     return lead_component;
 }
