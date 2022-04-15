@@ -5,21 +5,14 @@ module.exports = {
     configure: function (app, mongo, ObjectID, url, assert, dbb) {
         var lead_component = require('../component/lead_component')(mongo, ObjectID, url, assert, dbb);
 
-
-
-
-
-
-        app.post('/add_lead', function (req, res) {
+        app.post('/add_lottery', function (req, res) {
             try {
                 var new_details = {
-                    name: req.body.name,
-                    email: req.body.email,
-                    phone: req.body.phone,
-                    remark: req.body.remark,
-                    user_id: req.body.user_id,
+                    time: req.body.time,
                     date: req.body.date,
-                    time: req.body.time
+                    A: req.body.A,
+                    B: req.body.B,
+                    C: req.body.C
                 };
                 lead_component.add_lead(new_details, function (result, error, message) {
                     if (error) {
@@ -54,9 +47,9 @@ module.exports = {
             }
         });
 
-        app.post('/view_today_user_lead', function (req, res) {
+        app.post('/view_date_lottery', function (req, res) {
             try {
-                lead_component.view_today_user_lead(req.body.user_id,req.body.date,function (result, error, message) {
+                lead_component.view_today_user_lead(req.body.date,function (result, error, message) {
                     if (error) {
                         res.json({ status: false, message: message });
                     }

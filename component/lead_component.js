@@ -5,12 +5,12 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
             try {
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
-                    db.db().collection(dbb.LEAD).insertOne(new_details, function (err, result) {
+                    db.db().collection(dbb.LOTTERY).insertOne(new_details, function (err, result) {
                         if (err) {
                             callBack(null, true, "Error Occurred");
                         }
                         else {
-                            callBack(result, false, "Lead Added Successfully");
+                            callBack(result, false, "Lottery Added Successfully");
                         }
                         db.close();
                     })
@@ -25,7 +25,7 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
                 lead = [];
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
-                    var cursor = db.db().collection(dbb.LEAD).find({ 'user_id': user_id });
+                    var cursor = db.db().collection(dbb.LOTTERY).find({ 'user_id': user_id });
                     cursor.forEach(function (doc, err) {
                         if (err) {
                             callBack(null, true, err);
@@ -50,12 +50,12 @@ module.exports = function (mongo, ObjectID, url, assert, dbb) {
             }
         },
 
-        view_today_user_lead: function (user_id,date, callBack) {
+        view_today_user_lead: function (date, callBack) {
             try {
                 lead = [];
                 mongo.connect(url, { useNewUrlParser: true }, function (err, db) {
                     assert.equal(null, err);
-                    var cursor = db.db().collection(dbb.LEAD).find({ 'user_id': user_id, 'date':date });
+                    var cursor = db.db().collection(dbb.LOTTERY).find({ 'date':date });
                     cursor.forEach(function (doc, err) {
                         if (err) {
                             callBack(null, true, err);

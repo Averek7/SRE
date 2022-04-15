@@ -1,7 +1,7 @@
 
 var dbb = {
-    USER:'user',
-    LEAD:'lead'
+   
+    LOTTERY:'lottery'
 };
 
 module.exports = dbb
