@@ -1,2 +1,2 @@
 # SRE
-Quzi Portal
+Quiz Portal
