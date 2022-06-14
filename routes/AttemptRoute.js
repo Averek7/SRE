@@ -28,7 +28,12 @@ router.put(
       }
 
       const Question = await Questions.findById(question_id.toString());
-      const Attempts = await Attempt.findOne({ question_id });
+      const Attempts = await Attempt.findOne({
+        student_id,
+        quiz_id,
+        question_id,
+      });
+
       const correct_option = Question.correct;
 
       if (!Attempts) {

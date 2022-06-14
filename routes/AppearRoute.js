@@ -1,7 +1,6 @@
 const route = require("express").Router();
 const db = require("../component/Appear");
 const Attempt = require("../component/Attempted");
-const fetchquestion = require("../middleware/fetchquestion");
 const fetchquiz = require("../middleware/fetchquiz");
 const fetchStudent = require("../middleware/fetchStudent");
 
@@ -24,8 +23,8 @@ route.put("/start_exam", fetchStudent, fetchquiz, async (req, res) => {
       );
       return res.json({ status: true, message: "login attempt updated" });
     }
-var started_time = new Date();
-started_time.setTime(started_time.getTime()+19800000)
+    var started_time = new Date();
+    started_time.setTime(started_time.getTime() + 19800000);
     const data = {
       $set: {
         student_id,
@@ -58,10 +57,10 @@ route.put("/end_exam", fetchStudent, fetchquiz, async (req, res) => {
       return res.json({ status: false, message: "Exam already ended" });
     }
     var ended_time = new Date();
-    ended_time.setTime(ended_time.getTime()+19800000)
+    ended_time.setTime(ended_time.getTime() + 19800000);
     var started_time = check.started_time;
     var time_took = ended_time.getTime() - started_time.getTime();
-    var time_took = time_took / 60000
+    var time_took = time_took / 60000;
 
     const attempt_data = await Attempt.find({ student_id, quiz_id });
     let total_correct = 0;
