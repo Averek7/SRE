@@ -5,11 +5,11 @@ const quizSchema = new mongoose.Schema({
     required: true,
   },
   date: {
-    type: String, //date
+    type: String,
     required: true,
   },
   time: {
-    type: String, //date
+    type: String,
     required: true,
   },
   subject: {

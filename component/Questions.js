@@ -2,25 +2,25 @@ const mongoose = require("mongoose");
 const questionSchema = new mongoose.Schema({
   quiz_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "quiz", //required not added
+    ref: "quizzes",
   },
   question: {
     type: String,
     required: true,
   },
-  option1: {
+  A: {
     type: String,
     required: true,
   },
-  option2: {
+  B: {
     type: String,
     required: true,
   },
-  option3: {
+  C: {
     type: String,
     required: true,
   },
-  option4: {
+  D: {
     type: String,
     required: true,
   },

@@ -1,12 +1,21 @@
 const express = require("express");
 const router = express.Router();
 const { body, validationResult } = require("express-validator");
-const Student = require("../component/Student");
+const User = require("../component/User");
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = "secret_token_user";
 const bcrypt = require("bcryptjs");
 const fetchstudent = require("../middleware/fetchStudent");
 
+router.get("/get_all_students", async (req, res) => {
+  try {
+    const student = await User.find({ type: "S" });
+    res.json({ student });
+  } catch (error) {
+    console.error(error.message);
+    res.json("Some Error Occurred");
+  }
+});
 router.post(
   "/signup",
   [
@@ -36,23 +45,26 @@ router.post(
       dob,
       caste,
       profile,
+      type,
     } = req.body;
     try {
-      let Estudent = await Student.findOne({ email });
-      let Pstudent = await Student.findOne({ phone_no });
+      let Estudent = await User.findOne({ email });
+      let Pstudent = await User.findOne({ phone_no });
       if (Estudent || Pstudent) {
         status = false;
-        return res
-          .status(400)
-          .json({ status, error: "Sorry ! Student already exists" });
+        return res.status(400).json({
+          status,
+          error:
+            "Sorry ! Student already exists with entered email or phone number",
+        });
       }
 
       //   Hash
       const salt = await bcrypt.genSalt(10);
       const hashPassword = await bcrypt.hash(password, salt);
 
-      //   New Student
-      student = await Student.create({
+      //   New User
+      student = await User.create({
         email,
         password: hashPassword,
         name,
@@ -63,6 +75,7 @@ router.post(
         dob,
         caste,
         profile,
+        type,
       });
 
       const data = {
@@ -73,7 +86,7 @@ router.post(
 
       const authToken = jwt.sign(data, JWT_SECRET);
       status = true;
-      res.json({ status, message: "Successfully Signed-Up" });
+      res.json({ status, message: `Successfully Signed-Up as ${name}` });
     } catch (error) {
       console.error(error.message);
       res.status(500).send("Error Occurred");
@@ -98,7 +111,7 @@ router.post(
 
     const { email, password } = req.body;
     try {
-      let student = await Student.findOne({ email });
+      let student = await User.findOne({ email });
       if (!student) {
         res.status(400).json({ errors: "Please enter correct credentials" });
       }
@@ -135,7 +148,7 @@ router.post(
   async (req, res) => {
     const { phone_no, password } = req.body;
     try {
-      const student = await Student.findOne({ phone_no });
+      const student = await User.findOne({ phone_no });
       if (!student) {
         res.status(400).send({ errors: "Please enter correct credentials" });
       }
@@ -164,11 +177,41 @@ router.post(
 router.get("/view_profile", fetchstudent, async (req, res) => {
   let status = false;
   try {
-    const profile = await Student.find({ student: req.student.id }).select(
+    const student_id = req.student.id;
+    const profile = await User.findById(student_id.toString()).select(
       "-password"
     );
     status = true;
     res.json({ status, message: "Profiles Fetched", profile });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Some error occurred");
+  }
+});
+
+router.put("/change_password", fetchstudent, async (req, res) => {
+  const { current_password, new_password } = req.body;
+  try {
+    let status = false;
+    const student_id = req.student.id.toString();
+    const student = await User.findById(student_id);
+    if (!student) {
+      res.status(404).send("Login Required ! User Not Found");
+    }
+    const checkPassword = await bcrypt.compare(
+      current_password,
+      student.password
+    );
+    const salt = await bcrypt.genSalt(10);
+    const hashPassword = await bcrypt.hash(new_password, salt);
+    if (!checkPassword) {
+      res.status(400).json({ status, errors: "Please enter correct password" });
+    }
+    password_update = await User.findByIdAndUpdate(admin_id, {
+      password: hashPassword,
+    });
+    status = true;
+    res.status(200).json({ status, message: "Successfully Updated Password" });
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Some error occurred");
@@ -185,14 +228,14 @@ router.put("/update_profile/", fetchstudent, async (req, res) => {
     //   newProfile.name = name;
     // }
 
-    let profile_update = await Student.findById(req.student.id);
+    let profile_update = await User.findById(req.student.id);
     if (!profile_update) {
       return res.status(401).send("Access Denied");
     }
 
     let student_id = profile_update.id.toString();
 
-    profile_update = await Student.findByIdAndUpdate(
+    profile_update = await User.findByIdAndUpdate(
       student_id,
       req.body
       // { $set: newProfile },
