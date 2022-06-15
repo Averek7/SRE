@@ -5,7 +5,7 @@ const connectionMongo = require("./configuration/connection"); //link to Databas
 var app = express();
 
 //Configuring Port
-app.set("port", 8000);
+app.set("port", process.env.PORT);
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
