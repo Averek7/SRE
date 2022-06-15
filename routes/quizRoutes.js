@@ -2,6 +2,7 @@ const router = require("express").Router();
 const db = require("../component/Quiz");
 const jwt = require("jsonwebtoken");
 const fetchquiz = require("../middleware/fetchquiz");
+const questionDb = require("../component/Questions")
 const JWT_SECRET = "technoboot";
 
 router.post("/add_quiz", async (req, res) => {
@@ -83,13 +84,17 @@ router.delete("/delete_quiz/:id", async (req, res) => {
   }
 });
 
-router.get("/view_quiz", fetchquiz, async (req, res) => {
+router.get("/fetch_all_question_with_quizId/:id",async (req,res)=>{
   try {
-    const quiz = await db.findById(req.quiz.id);
-    res.json({ quiz });
+    const quiz_id = req.params.id
+    if (!quiz_id) {
+      return res.status(404).json({ status : false, message: "quiz id not found" });
+    }
+    const Questions = await questionDb.find({quiz_id})
+    res.json({status : true, result : Questions })
   } catch (error) {
-    console.error(error.message);
-    res.status(500).send("Some Error Occurred");
+    console.log(error.message);
+    res.status(500).json({ status: false, message: "internal server error" });
   }
-});
+})
 module.exports = router;

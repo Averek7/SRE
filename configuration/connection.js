@@ -3,7 +3,7 @@
 
 const mongoose = require("mongoose");
 const mongoURI =
-  "mongodb://localhost:27017/skyriderexam?readPreference=primary&directConnection=true&ssl=false";
+  "mongodb+srv://mongo:mongopassword@technoboot-rmisn.mongodb.net/sreexam?retryWrites=true&w=majority";
 
 // local mongodb database
 
