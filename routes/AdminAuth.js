@@ -4,7 +4,7 @@ const fetchadmin = require("../middleware/fetchAdmin");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../component/User");
-const JWT_SECRET = "secret_token_user";
+const JWT_SECRET = process.env.JWT_SECRET_U;
 
 router.get("/get_all_admin", async (req, res) => {
   try {
