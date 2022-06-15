@@ -1,57 +1,41 @@
 const router = require("express").Router();
 const db = require("../component/Quiz");
-const { body, validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
 const fetchquiz = require("../middleware/fetchquiz");
 const JWT_SECRET = "technoboot";
 
-router.post(
-  "/add_quiz",
-  [
-    body("name", "name is empty").exists(),
-    body("date", "date is empty").exists(),
-    body("time", "time is empty").exists(),
-    body("subject", "subject is empty").exists(),
-    body("marks").exists().isNumeric(),
-    body("duration").exists().isNumeric(),
-  ],
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).send(errors.array());
-    }
-    try {
-      let status = false;
-      const { name, date, time, subject, marks, duration } = req.body;
-      const quiz = await db.create({
-        name,
-        date,
-        time,
-        subject,
-        marks,
-        duration,
-      });
+router.post("/add_quiz", async (req, res) => {
+  try {
+    let status = false;
+    const { name, date, time, subject, marks, duration } = req.body;
+    const quiz = await db.create({
+      name,
+      date,
+      time,
+      subject,
+      marks,
+      duration,
+    });
 
-      const data = {
-        quiz: {
-          id: quiz.id,
-        },
-      };
+    const data = {
+      quiz: {
+        id: quiz.id,
+      },
+    };
 
-      const quizToken = jwt.sign(data, JWT_SECRET);
+    const quizToken = jwt.sign(data, JWT_SECRET);
 
-      status = true;
-      res.json({
-        status,
-        message: "Quiz added successfully",
-        result: quizToken,
-      });
-    } catch (e) {
-      console.log(e.message);
-      res.status(500).json({ status: false, message: "internal server error" });
-    }
+    status = true;
+    res.json({
+      status,
+      message: "Quiz added successfully",
+      result: quizToken,
+    });
+  } catch (e) {
+    console.log(e.message);
+    res.status(500).json({ status: false, message: "internal server error" });
   }
-);
+});
 
 router.get("/view_all_quiz", async (req, res) => {
   try {

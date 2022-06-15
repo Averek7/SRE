@@ -1,5 +1,4 @@
 const express = require("express");
-const { body, validationResult } = require("express-validator");
 const router = express.Router();
 const db = require("../component/Questions");
 const fetchquiz = require("../middleware/fetchquiz");
