@@ -1,12 +1,11 @@
 const express = require("express");
 const cors = require("cors");
 const connectionMongo = require("./configuration/connection"); //link to Database
-require("dotenv").config();
 
 var app = express();
 
 //Configuring Port
-app.set("port", process.env.PORT);
+app.set("port", 8000);
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -21,7 +20,7 @@ app.use("/api/quiz", require("./routes/quizRoutes"));
 app.use("/api/question", require("./routes/questionRoute"));
 app.use("/api/quiz/attempts", require("./routes/AttemptRoute"));
 app.use("/api/quiz/appear", require("./routes/AppearRoute"));
-
+//test
 app.listen(app.get("port"), function () {
   console.log("Node app is running on port", app.get("port"));
 });
