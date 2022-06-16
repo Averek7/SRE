@@ -26,6 +26,9 @@ const UserSchema = new Schema({
   branch_name: {
     type: String,
   },
+  education: {
+    type: String,
+  },
   gender: {
     type: String,
   },
