@@ -3,7 +3,7 @@ const db = require("../component/Quiz");
 const jwt = require("jsonwebtoken");
 // const fetchquiz = require("../middleware/fetchquiz");
 const questionDb = require("../component/Questions");
-const JWT_SECRET = process.env.JWT_SECRET_Q;
+const JWT_SECRET = "technoboot";
 
 router.post("/add_quiz", async (req, res) => {
   try {

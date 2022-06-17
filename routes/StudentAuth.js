@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../component/User");
 const jwt = require("jsonwebtoken");
-const JWT_SECRET = process.env.JWT_SECRET_U;
+const JWT_SECRET = "secret_token_user";
 const bcrypt = require("bcryptjs");
 const fetchstudent = require("../middleware/fetchStudent");
 
@@ -150,13 +150,16 @@ router.get("/view_profile", fetchstudent, async (req, res) => {
 });
 
 router.put("/change_password", fetchstudent, async (req, res) => {
-  const { current_password, new_password } = req.body;
+  const { current_password, confirm_password, new_password } = req.body;
   try {
     let status = false;
     const student_id = req.student.id.toString();
     const student = await User.findById(student_id);
     if (!student) {
       res.status(404).send("Login Required ! User Not Found");
+    }
+    if (current_password !== confirm_password) {
+      res.status(400).json({ status, error: "Password mismatch" });
     }
     const checkPassword = await bcrypt.compare(
       current_password,

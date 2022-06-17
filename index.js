@@ -19,8 +19,8 @@ app.use("/api/Aauth", require("./routes/AdminAuth"));
 app.use("/api/Sauth", require("./routes/StudentAuth"));
 app.use("/api/quiz", require("./routes/quizRoutes"));
 app.use("/api/question", require("./routes/questionRoute"));
-app.use("/api/quiz/attempts", require("./routes/AttemptRoute"));
 app.use("/api/quiz/appear", require("./routes/AppearRoute"));
+app.use("/api/quiz/question", require("./routes/AttemptRoute"));
 //test
 app.listen(app.get("port"), function () {
   console.log("Node app is running on port", app.get("port"));

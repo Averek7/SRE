@@ -4,7 +4,7 @@ const fetchadmin = require("../middleware/fetchAdmin");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../component/User");
-const JWT_SECRET = process.env.JWT_SECRET_U;
+const JWT_SECRET = "secret_token_user";
 
 router.get("/get_all_admin", async (req, res) => {
   try {
@@ -133,13 +133,16 @@ router.post("/login_phone", async (req, res) => {
 });
 
 router.put("/change_password", fetchadmin, async (req, res) => {
-  const { current_password, new_password } = req.body;
+  const { current_password, confirm_password, new_password } = req.body;
   try {
     let status = false;
     const admin_id = req.admin.id.toString();
     const admin = await User.findById(admin_id);
     if (!admin) {
       res.status(404).send("Login Required ! User Not Found");
+    }
+    if (current_password !== confirm_password) {
+      res.status(400).json({ status, error: "Password mismatch" });
     }
     const checkPassword = await bcrypt.compare(
       current_password,

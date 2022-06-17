@@ -6,10 +6,10 @@ const fetchstudent = require("../middleware/fetchStudent");
 const fetchquiz = require("../middleware/fetchquiz");
 const fetchquestion = require("../middleware/fetchquestion");
 const jwt = require("jsonwebtoken");
-const SECRET_TOKEN = process.env.JWT_SECRET_Q;
+const SECRET_TOKEN = "technoboot";
 
 router.put(
-  "/add_option",
+  "/attempted",
   fetchstudent,
   fetchquiz,
   fetchquestion,
