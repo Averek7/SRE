@@ -1,10 +1,36 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../component/User");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = "secret_token_user";
-const bcrypt = require("bcryptjs");
+const User = require("../component/User");
+const Appear = require("../component/Appear");
+const Quiz = require("../component/Quiz");
 const fetchstudent = require("../middleware/fetchStudent");
+
+router.get("/dashboard", fetchstudent, async (req, res) => {
+  try {
+    const dashboard = await Appear.find({ student_id: req.student.id });
+    for (let index = 0; index < dashboard.length; index++) {
+      const info = dashboard[index];
+      const quiz = await Quiz.find({ quiz: info.quiz_id });
+      res.status(200).json({
+        result: {
+          quiz_name: quiz.name,
+          quiz_date: quiz.date,
+          quiz_subject: quiz.subject,
+          started_time: info.started_time,
+          end_time: info.end_time,
+          time_taken: info.time_took,
+          score: info.total_correct,
+        },
+      });
+    }
+  } catch (error) {
+    console.error(error.message);
+    res.json("Some Error Occurred");
+  }
+});
 
 router.get("/get_all_students", async (req, res) => {
   try {
@@ -15,6 +41,7 @@ router.get("/get_all_students", async (req, res) => {
     res.json("Some Error Occurred");
   }
 });
+
 router.post("/signup", async (req, res) => {
   let status;
   const {
@@ -138,9 +165,8 @@ router.get("/view_profile", fetchstudent, async (req, res) => {
   let status = false;
   try {
     const student_id = req.student.id;
-    const profile = await User.findById(student_id.toString()).select(
-      "-password"
-    );
+    const profile = await User.findById(student_id.toString());
+
     status = true;
     res.json({ status, message: "Profile Fetched", profile });
   } catch (error) {
