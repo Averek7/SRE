@@ -13,12 +13,13 @@ router.get("/dashboard", fetchstudent, async (req, res) => {
     const dashboard = await Appear.find({ student_id: req.student.id });
     for (let index = 0; index < dashboard.length; index++) {
       const info = dashboard[index];
-      const quiz = await Quiz.find({ quiz: info.quiz_id });
+      const quiz = await Quiz.find({ quiz_id: info.quiz_id });
+      const quiz_info = quiz[index];
       res.status(200).json({
         result: {
-          quiz_name: quiz.name,
-          quiz_date: quiz.date,
-          quiz_subject: quiz.subject,
+          quiz_name: quiz_info.name,
+          quiz_date: quiz_info.date,
+          quiz_subject: quiz_info.subject,
           started_time: info.started_time,
           end_time: info.end_time,
           time_taken: info.time_took,
