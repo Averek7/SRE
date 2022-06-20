@@ -15,7 +15,7 @@ const JWT_SECRET = "secret_token_user";
 
 router.get("/dashboard", fetchquiz, async (req, res) => {
   const quiz_id = req.quiz.id
-  const attended = await Appear.find({ quiz_id }).sort({percentage:1}).exec()
+  const attended = await Appear.find({ quiz_id }).sort({percentage : -1})
   console.log(attended)
   var arr = []
   for (let index = 0; index < attended.length; index++) {
