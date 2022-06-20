@@ -24,9 +24,12 @@ const AppearSchema = new mongoose.Schema(
     time_took: {
       type: String,
     },
-    total_correct: {
+    total_marks: {
       type: Number,
     },
+    parcentage : {
+      type : Number
+    }
   },
   { versionKey: false }
 );

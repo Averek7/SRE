@@ -1,11 +1,40 @@
 const express = require("express");
 const router = express.Router();
 const fetchadmin = require("../middleware/fetchAdmin");
+const fetchquiz = require("../middleware/fetchquiz")
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../component/User");
+const Appear = require("../component/Appear")
+
+
 const JWT_SECRET = "secret_token_user";
 
+
+
+
+router.get("/dashboard", fetchquiz, async (req, res) => {
+  const quiz_id = req.quiz.id
+  const attended = await Appear.find({ quiz_id })
+  console.log(attended)
+  var arr = []
+  for (let index = 0; index < attended.length; index++) {
+    const element = attended[index];
+    
+    var obj = {}
+    const std_id = element.student_id
+    const std_data = await User.findById(std_id)
+    obj.name = std_data.name
+    obj.profile = std_data.profile
+    obj.time_spend = element.time_took
+    obj.time_out = element.ended_time
+    obj.parcentage = element.parcentage
+    obj.total_mark = element.total_marks
+    obj.grade = "good"
+    arr.push(obj)
+  }
+  res.json({status : true , result : arr})
+})
 router.get("/get_all_admin", async (req, res) => {
   try {
     const admin = await User.find({ type: "A" });
