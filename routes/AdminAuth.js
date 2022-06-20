@@ -15,7 +15,7 @@ const JWT_SECRET = "secret_token_user";
 
 router.get("/dashboard", fetchquiz, async (req, res) => {
   const quiz_id = req.quiz.id
-  const attended = await Appear.find({ quiz_id })
+  const attended = await Appear.find({ quiz_id }).sort({percentage:1}).exec()
   console.log(attended)
   var arr = []
   for (let index = 0; index < attended.length; index++) {
@@ -28,9 +28,36 @@ router.get("/dashboard", fetchquiz, async (req, res) => {
     obj.profile = std_data.profile
     obj.time_spend = element.time_took
     obj.time_out = element.ended_time
-    obj.parcentage = element.parcentage
-    obj.total_mark = element.total_marks
-    obj.grade = "good"
+    obj.percentage = element.percentage
+    if(obj.percentage>33){
+      obj.result = "Passed"
+    }else{
+      obj.result = "Failed"
+    }
+    if(obj.percentage>89){
+      obj.grade="Outstanding"
+    }
+    else  if(obj.percentage>79 && obj.percentage<90){
+      obj.grade="Excellent"
+    }   
+    else  if(obj.percentage>69 && obj.percentage<80){
+      obj.grade="Very Good"
+    }
+    else  if(obj.percentage>59 && obj.percentage<70){
+      obj.grade="Good"
+    }
+    else  if(obj.percentage>49 && obj.percentage<60){
+      obj.grade="Satisfactory"
+    }
+    else  if(obj.percentage>39 && obj.percentage<50){
+      obj.grade="fair"
+    }
+    else  if(obj.percentage>33 && obj.percentage<40){
+      obj.grade="Passed"
+    }
+    else{
+      obj.grade="Fail"
+    }
     arr.push(obj)
   }
   res.json({status : true , result : arr})

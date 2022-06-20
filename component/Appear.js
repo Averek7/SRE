@@ -27,7 +27,7 @@ const AppearSchema = new mongoose.Schema(
     total_marks: {
       type: Number,
     },
-    parcentage : {
+    percentage : {
       type : Number
     }
   },

@@ -85,7 +85,7 @@ route.put("/end_exam", fetchStudent, fetchquiz, async (req, res) => {
         total_correct: req.body.total_correct,
         time_took,
         total_marks,
-        parcentage
+        percentage : parcentage
       },
     };
     const endExam = await db.updateOne({ student_id }, data);
