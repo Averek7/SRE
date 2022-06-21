@@ -1,9 +1,10 @@
 const route = require("express").Router();
 const db = require("../component/Appear");
 const Attempt = require("../component/Attempted");
+const question = require("../component/Questions");
 const fetchquiz = require("../middleware/fetchquiz");
 const fetchStudent = require("../middleware/fetchStudent");
-
+const quiz = require("../component/Quiz");
 route.put("/start_exam", fetchStudent, fetchquiz, async (req, res) => {
   try {
     const student_id = req.student.id;
@@ -63,22 +64,31 @@ route.put("/end_exam", fetchStudent, fetchquiz, async (req, res) => {
     var time_took = time_took / 60000;
 
     const attempt_data = await Attempt.find({ student_id, quiz_id });
-    let total_correct = 0;
+    let total_marks = 0;
     for (let index = 0; index < attempt_data.length; index++) {
       if (
         attempt_data[index].correct_option ===
         attempt_data[index].option_selected
       ) {
-        total_correct++;
+        var question_id = attempt_data[index].question_id;
+
+        var marks = await question.findById(question_id);
+        marks = marks.marks;
+        total_marks += marks;
       }
     }
+    var parcentage = await quiz.findById(quiz_id);
+    parcentage = parcentage.marks;
+    parcentage = total_marks / parcentage;
+    parcentage = parcentage * 100;
 
     const data = {
       $set: {
         ended_time,
         total_correct: req.body.total_correct,
         time_took,
-        total_correct,
+        total_marks,
+        percentage: parcentage,
       },
     };
     const endExam = await db.updateOne({ student_id }, data);
