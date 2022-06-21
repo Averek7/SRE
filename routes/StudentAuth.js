@@ -16,6 +16,7 @@ router.get("/dashboard", fetchstudent, async (req, res) => {
       const quiz = await Quiz.find({ quiz_id: info.quiz_id });
       const quiz_info = quiz[index];
       res.status(200).json({
+        message: "Fetched Successfully",
         result: {
           quiz_name: quiz_info.name,
           quiz_date: quiz_info.date,
@@ -36,7 +37,10 @@ router.get("/dashboard", fetchstudent, async (req, res) => {
 router.get("/get_all_students", async (req, res) => {
   try {
     const student = await User.find({ type: "S" });
-    res.json({ student });
+    if (!student) {
+      res.status(404).send("No records found");
+    }
+    res.status(200).json({ message: "Fetched Successfully", student });
   } catch (error) {
     console.error(error.message);
     res.json("Some Error Occurred");
@@ -166,8 +170,9 @@ router.get("/view_profile", fetchstudent, async (req, res) => {
   let status = false;
   try {
     const student_id = req.student.id;
-    const profile = await User.findById(student_id.toString());
-
+    const profile = await User.findById(student_id.toString()).select(
+      "-password"
+    );
     status = true;
     res.json({ status, message: "Profile Fetched", profile });
   } catch (error) {

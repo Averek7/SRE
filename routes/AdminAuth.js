@@ -6,10 +6,13 @@ const jwt = require("jsonwebtoken");
 const User = require("../component/User");
 const JWT_SECRET = "secret_token_user";
 
-router.get("/get_all_admin", async (req, res) => {
+router.get("/get_admins", async (req, res) => {
   try {
-    const admin = await User.find({ type: "A" });
-    res.json({ admin });
+    const admin = await User.find({ type: "A" }).select("-password");
+    if (!admin) {
+      res.status(404).send("No details found");
+    }
+    res.status(200).json({ message: "Fetched Successfully", admin });
   } catch (error) {
     console.error(error.message);
     res
@@ -18,16 +21,7 @@ router.get("/get_all_admin", async (req, res) => {
   }
 });
 
-router.get("/get_admin", fetchadmin, async (req, res) => {
-  try {
-    const admin_id = req.admin.id;
-    const admin = await User.findById(admin_id.toString()).select("-password");
-    res.json({ admin });
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Some error occurred");
-  }
-});
+router.get("/dashboard", fetchadmin, async (req, res) => {});
 
 router.post("/signup", async (req, res) => {
   let success;
