@@ -67,8 +67,6 @@ router.get("/get_admins", async (req, res) => {
   }
 });
 
-router.get("/dashboard", fetchadmin, async (req, res) => {});
-
 router.post("/signup", async (req, res) => {
   let success;
   const { email, password, name, phone_no, profile, type } = req.body;
@@ -137,7 +135,12 @@ router.post("/login_email", async (req, res) => {
     };
     const authToken = jwt.sign(payLoad, JWT_SECRET);
     success = true;
-    res.json({ success, message: "Successfully Signed In", authToken });
+    res.json({
+      success,
+      message: "Successfully Signed In",
+      type: admin.type,
+      authToken,
+    });
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Some error occurred", { message: "Failed Sign In" });
@@ -165,7 +168,12 @@ router.post("/login_phone", async (req, res) => {
     };
     const authToken = jwt.sign(payLoad, JWT_SECRET);
     status = true;
-    res.json({ status, message: "Successfully Signed In", authToken });
+    res.json({
+      status,
+      message: "Successfully Signed In",
+      type: admin.type,
+      authToken,
+    });
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Some error occurred");

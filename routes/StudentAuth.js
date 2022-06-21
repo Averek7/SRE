@@ -131,7 +131,12 @@ router.post("/login_email", async (req, res) => {
     };
     const authToken = jwt.sign(payLoad, JWT_SECRET);
     status = true;
-    res.json({ status, message: "Successfully Signed In", authToken });
+    res.json({
+      status,
+      message: "Successfully Signed In",
+      type: admin.type,
+      authToken,
+    });
   } catch (error) {
     console.error(err.message);
     res.status(500).send("Some error occurred");
@@ -159,7 +164,12 @@ router.post("/login_phone", async (req, res) => {
     };
     const authToken = jwt.sign(payLoad, JWT_SECRET);
     status = true;
-    res.json({ status, message: "Successfully Signed In", authToken });
+    res.json({
+      status,
+      message: "Successfully Signed In",
+      type: admin.type,
+      authToken,
+    });
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Some error occurred");
