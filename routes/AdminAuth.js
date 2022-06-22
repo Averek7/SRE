@@ -71,9 +71,8 @@ router.post("/signup", async (req, res) => {
   let success;
   const { email, password, name, phone_no, profile, type } = req.body;
   try {
-    let Eadmin = await User.findOne({ email });
-    let Padmin = await User.findOne({ phone_no });
-    if (Eadmin || Padmin) {
+    let checkAdmin = await User.findOne({ email, phone_no });
+    if (checkAdmin) {
       success = false;
       return res.status(400).json({
         success,
@@ -117,7 +116,7 @@ router.post("/signup", async (req, res) => {
 router.post("/login_email", async (req, res) => {
   const { email, password } = req.body;
   try {
-    let admin = await User.findOne({ email });
+    let admin = await User.findOne({ email, type: "A" });
     if (!admin) {
       res.status(400).json({ errors: "Please enter correct credentials" });
     }
@@ -150,7 +149,7 @@ router.post("/login_email", async (req, res) => {
 router.post("/login_phone", async (req, res) => {
   const { phone_no, password } = req.body;
   try {
-    const admin = await User.findOne({ phone_no });
+    const admin = await User.findOne({ phone_no, type: "A" });
     if (!admin) {
       res.status(400).send({ errors: "Please enter correct credentials" });
     }

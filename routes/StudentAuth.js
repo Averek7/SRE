@@ -64,9 +64,8 @@ router.post("/signup", async (req, res) => {
     type,
   } = req.body;
   try {
-    let Estudent = await User.findOne({ email });
-    let Pstudent = await User.findOne({ phone_no });
-    if (Estudent || Pstudent) {
+    let checkStudent = await User.findOne({ email, phone_no });
+    if (checkStudent) {
       status = false;
       return res.status(400).json({
         status,
@@ -113,7 +112,7 @@ router.post("/signup", async (req, res) => {
 router.post("/login_email", async (req, res) => {
   const { email, password } = req.body;
   try {
-    let student = await User.findOne({ email });
+    let student = await User.findOne({ email, type: "S" });
     if (!student) {
       res.status(400).json({ errors: "Please enter correct credentials" });
     }
@@ -134,11 +133,11 @@ router.post("/login_email", async (req, res) => {
     res.json({
       status,
       message: "Successfully Signed In",
-      type: admin.type,
+      type: student.type,
       authToken,
     });
   } catch (error) {
-    console.error(err.message);
+    console.error(error.message);
     res.status(500).send("Some error occurred");
   }
 });
@@ -146,7 +145,7 @@ router.post("/login_email", async (req, res) => {
 router.post("/login_phone", async (req, res) => {
   const { phone_no, password } = req.body;
   try {
-    const student = await User.findOne({ phone_no });
+    const student = await User.findOne({ phone_no, type: "S" });
     if (!student) {
       res.status(400).send({ errors: "Please enter correct credentials" });
     }
@@ -167,7 +166,7 @@ router.post("/login_phone", async (req, res) => {
     res.json({
       status,
       message: "Successfully Signed In",
-      type: admin.type,
+      type: student.type,
       authToken,
     });
   } catch (error) {
