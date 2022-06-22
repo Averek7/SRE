@@ -211,7 +211,7 @@ router.put("/change_password", fetchstudent, async (req, res) => {
     if (!checkPassword) {
       res.status(400).json({ status, errors: "Please enter correct password" });
     }
-    password_update = await User.findByIdAndUpdate(admin_id, {
+    password_update = await User.findByIdAndUpdate(student_id, {
       password: hashPassword,
     });
     status = true;
