@@ -6,6 +6,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../component/User");
 const Appear = require("../component/Appear");
+const Quiz = require("../component/Quiz")
 
 const JWT_SECRET = "secret_token_user";
 
@@ -49,7 +50,9 @@ router.get("/dashboard", fetchquiz, async (req, res) => {
     }
     arr.push(obj);
   }
-  res.json({ status: true, result: arr });
+  const quiz_sub = await Quiz.findById(quiz_id)
+
+  res.json({ status: true, subject : quiz_sub.subject ,result: arr });
 });
 
 router.get("/get_admins", async (req, res) => {
