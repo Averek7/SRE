@@ -6,13 +6,14 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../component/User");
 const Appear = require("../component/Appear");
-const Quiz = require("../component/Quiz")
+const Quiz = require("../component/Quiz");
 
 const JWT_SECRET = "secret_token_user";
 
 router.get("/dashboard", fetchquiz, async (req, res) => {
   const quiz_id = req.quiz.id;
   const attended = await Appear.find({ quiz_id }).sort({ percentage: -1 });
+  const quiz_sub = await Quiz.findById(quiz_id);
   console.log(attended);
   var arr = [];
   for (let index = 0; index < attended.length; index++) {
@@ -23,6 +24,7 @@ router.get("/dashboard", fetchquiz, async (req, res) => {
     const std_data = await User.findById(std_id);
     obj.name = std_data.name;
     obj.profile = std_data.profile;
+    obj.subject = quiz_sub.subject;
     obj.time_spend = element.time_took;
     obj.time_out = element.ended_time;
     obj.percentage = element.percentage;
@@ -50,9 +52,7 @@ router.get("/dashboard", fetchquiz, async (req, res) => {
     }
     arr.push(obj);
   }
-  const quiz_sub = await Quiz.findById(quiz_id)
-
-  res.json({ status: true, subject : quiz_sub.subject ,result: arr });
+  res.json({ status: true, result: arr });
 });
 
 router.get("/get_admins", async (req, res) => {
@@ -140,6 +140,9 @@ router.post("/login_email", async (req, res) => {
     res.json({
       success,
       message: "Successfully Signed In",
+      id: admin.id,
+      name: admin.name,
+      email: admin.email,
       type: admin.type,
       authToken,
     });
@@ -173,6 +176,9 @@ router.post("/login_phone", async (req, res) => {
     res.json({
       status,
       message: "Successfully Signed In",
+      id: admin.id,
+      name: admin.name,
+      phone_no: admin.phone_no,
       type: admin.type,
       authToken,
     });

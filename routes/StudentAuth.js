@@ -133,6 +133,9 @@ router.post("/login_email", async (req, res) => {
     res.json({
       status,
       message: "Successfully Signed In",
+      id: student.id,
+      name: student.name,
+      email: student.email,
       type: student.type,
       authToken,
     });
@@ -166,6 +169,9 @@ router.post("/login_phone", async (req, res) => {
     res.json({
       status,
       message: "Successfully Signed In",
+      id: student.id,
+      name: student.name,
+      phone_no: student.phone_no,
       type: student.type,
       authToken,
     });
