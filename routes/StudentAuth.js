@@ -11,24 +11,69 @@ const fetchstudent = require("../middleware/fetchStudent");
 router.get("/dashboard", fetchstudent, async (req, res) => {
   try {
     const dashboard = await Appear.find({ student_id: req.student.id });
-    for (let index = 0; index < dashboard.length; index++) {
-      const info = dashboard[index];
-      const quiz = await Quiz.find({ quiz_id: info.quiz_id });
-      const quiz_info = quiz[index];
-      res.status(200).json({
-        message: "Fetched Successfully",
-        result: {
-          quiz_name: quiz_info.name,
-          quiz_date: quiz_info.date,
-          quiz_subject: quiz_info.subject,
-          started_time: info.started_time,
-          end_time: info.end_time,
-          time_taken: info.time_took,
-          score: info.total_correct,
-        },
-      });
+    var summary = {
+      Attended_test: dashboard.length
     }
-  } catch (error) {
+    var pass = 0;
+    var fail = 0;
+    var average = 0;
+    for (let index = 0; index < dashboard.length; index++) {
+      var element = dashboard[index];
+      if (element.percentage > 33) {
+        pass += 1
+      }
+      else {
+        fail = +1
+      }
+      average += element.percentage
+    }
+    summary.passed_test = pass
+    summary.failed_test = fail
+    summary.average_score = (average / dashboard.length).toFixed(2)
+
+
+    //exam history
+    var history = []
+
+    for (let index = 0; index < dashboard.length; index++) {
+      var obj = {}
+      const element = dashboard[index];
+
+      obj.score_in_percentage = (element.percentage).toFixed(2)
+      obj.time_spent = element.time_took
+      obj.submitted = element.ended_time
+      if (element.percentage > 89) {
+        obj.grade = "Outstanding";
+      } else if (element.percentage > 79 && element.percentage < 90) {
+        obj.grade = "Excellent";
+      } else if (element.percentage > 69 && element.percentage < 80) {
+        obj.grade = "Very Good";
+      } else if (element.percentage > 59 && element.percentage < 70) {
+        obj.grade = "Good";
+      } else if (element.percentage > 49 && element.percentage < 60) {
+        obj.grade = "Satisfactory";
+      } else if (element.percentage > 39 && element.percentage < 50) {
+        obj.grade = "fair";
+      } else if (element.percentage > 33 && element.percentage < 40) {
+        obj.grade = "Passed";
+      } else {
+        obj.grade = "Fail";
+      }
+      const quiz = await Quiz.findById(element.quiz_id)
+      obj.subject = quiz.subject
+      obj.details = {
+        quiz_date :quiz.date,
+        quiz_time : quiz.time,
+        quiz_marks : quiz.marks,
+        quiz_duration : quiz.duration
+      }
+      history.push(obj)
+    }
+
+    res.json({ status: true, summary, history })
+
+  }
+  catch (error) {
     console.error(error.message);
     res.json("Some Error Occurred");
   }
