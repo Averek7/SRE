@@ -168,13 +168,13 @@ router.post("/login_email", async (req, res) => {
   try {
     let student = await User.findOne({ email, type: "S" });
     if (!student) {
-    return res.status(400).json({ errors: "Please enter correct credentials" });
+      res.status(400).json({ errors: "Please enter correct credentials" });
     }
     let status;
     const comparePassword = await bcrypt.compare(password, student.password);
     if (!comparePassword) {
-     
-     return res
+
+      res
         .status(400)
         .json({ status, errors: "Please enter correct credentials" });
     }
