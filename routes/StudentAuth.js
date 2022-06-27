@@ -11,37 +11,42 @@ const fetchstudent = require("../middleware/fetchStudent");
 router.get("/dashboard", fetchstudent, async (req, res) => {
   try {
     const dashboard = await Appear.find({ student_id: req.student.id });
-    var summary = {
-      Attended_test: dashboard.length
-    }
+    var current_datetime = new Date().getTime() + 19800000;
+    var pending = 0;
     var pass = 0;
     var fail = 0;
     var average = 0;
     for (let index = 0; index < dashboard.length; index++) {
+      pending_datetime = dashboard[index].started_time.getTime();
+      if (current_datetime < pending_datetime) {
+        pending++;
+      }
+      var summary = {
+        Attended_test: dashboard.length,
+        Pending_test: pending,
+      };
       var element = dashboard[index];
       if (element.percentage > 33) {
-        pass += 1
+        pass += 1;
+      } else {
+        fail = +1;
       }
-      else {
-        fail = +1
-      }
-      average += element.percentage
+      average += element.percentage;
     }
-    summary.passed_test = pass
-    summary.failed_test = fail
-    summary.average_score = (average / dashboard.length).toFixed(2)
-
+    summary.passed_test = pass;
+    summary.failed_test = fail;
+    summary.average_score = average / dashboard.length;
 
     //exam history
-    var history = []
+    var history = [];
 
     for (let index = 0; index < dashboard.length; index++) {
-      var obj = {}
+      var obj = {};
       const element = dashboard[index];
 
-      obj.score_in_percentage = (element.percentage).toFixed(2)
-      obj.time_spent = element.time_took
-      obj.submitted = element.ended_time
+      obj.score_in_percentage = element.percentage;
+      obj.time_spent = element.time_took;
+      obj.submitted = element.ended_time;
       if (element.percentage > 89) {
         obj.grade = "Outstanding";
       } else if (element.percentage > 79 && element.percentage < 90) {
@@ -59,21 +64,19 @@ router.get("/dashboard", fetchstudent, async (req, res) => {
       } else {
         obj.grade = "Fail";
       }
-      const quiz = await Quiz.findById(element.quiz_id)
-      obj.subject = quiz.subject
+      const quiz = await Quiz.findById(element.quiz_id);
+      obj.subject = quiz.subject;
       obj.details = {
-        quiz_date :quiz.date,
-        quiz_time : quiz.time,
-        quiz_marks : quiz.marks,
-        quiz_duration : quiz.duration
-      }
-      history.push(obj)
+        quiz_date: quiz.date,
+        quiz_time: quiz.time,
+        quiz_marks: quiz.marks,
+        quiz_duration: quiz.duration,
+      };
+      history.push(obj);
     }
 
-    res.json({ status: true, summary, history })
-
-  }
-  catch (error) {
+    res.json({ status: true, summary, history });
+  } catch (error) {
     console.error(error.message);
     res.json("Some Error Occurred");
   }

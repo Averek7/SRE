@@ -61,7 +61,7 @@ route.put("/end_exam", fetchStudent, fetchquiz, async (req, res) => {
     ended_time.setTime(ended_time.getTime() + 19800000);
     var started_time = check.started_time;
     var time_took = ended_time.getTime() - started_time.getTime();
-    var time_took =(time_took / 60000).toFixed(2);
+    var time_took = (time_took / 60000).toFixed(2);
 
     const attempt_data = await Attempt.find({ student_id, quiz_id });
     let total_marks = 0;
