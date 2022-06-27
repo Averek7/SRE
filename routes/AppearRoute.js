@@ -90,7 +90,7 @@ route.put("/end_exam", fetchStudent, fetchquiz, async (req, res) => {
         time_took,
         total_marks,
         percentage,
-
+        total_correct,
       },
     };
     const endExam = await db.updateOne({ student_id }, data);
