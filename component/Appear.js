@@ -29,6 +29,9 @@ const AppearSchema = new mongoose.Schema(
     },
     percentage : {
       type : Number
+    },
+    total_correct : {
+      type : Number
     }
   },
   { versionKey: false }
