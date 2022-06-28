@@ -5,6 +5,7 @@ const question = require("../component/Questions");
 const fetchquiz = require("../middleware/fetchquiz");
 const fetchStudent = require("../middleware/fetchStudent");
 const quiz = require("../component/Quiz");
+
 route.put("/start_exam", fetchStudent, fetchquiz, async (req, res) => {
   try {
     const student_id = req.student.id;
@@ -103,5 +104,10 @@ route.put("/end_exam", fetchStudent, fetchquiz, async (req, res) => {
     res.status(500).json({ status: false, message: "internal server error" });
   }
 });
+
+route.post("/add" , async(req,res)=>{
+const data = await db.create(req.body)
+res.json({data})
+})
 
 module.exports = route;
