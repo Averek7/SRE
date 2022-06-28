@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // Database Connection
-connectionMongo();
+
 
 // Routes
 app.use("/api/Aauth", require("./routes/AdminAuth"));

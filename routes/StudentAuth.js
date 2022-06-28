@@ -173,6 +173,7 @@ router.post("/login_email", async (req, res) => {
     let status;
     const comparePassword = await bcrypt.compare(password, student.password);
     if (!comparePassword) {
+
       res
         .status(400)
         .json({ status, errors: "Please enter correct credentials" });

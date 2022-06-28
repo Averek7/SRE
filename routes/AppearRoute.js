@@ -65,22 +65,23 @@ route.put("/end_exam", fetchStudent, fetchquiz, async (req, res) => {
 
     const attempt_data = await Attempt.find({ student_id, quiz_id });
     let total_marks = 0;
+    let total_correct = 0;
     for (let index = 0; index < attempt_data.length; index++) {
       if (
         attempt_data[index].correct_option ===
         attempt_data[index].option_selected
       ) {
         var question_id = attempt_data[index].question_id;
-
+        total_correct++
         var marks = await question.findById(question_id);
         marks = marks.marks;
         total_marks += marks;
       }
     }
-    var parcentage = await quiz.findById(quiz_id);
-    parcentage = parcentage.marks;
-    parcentage = total_marks / parcentage;
-    parcentage = parcentage * 100;
+    var percentage = await quiz.findById(quiz_id);
+    percentage = percentage.marks;
+    percentage = total_marks / percentage;
+    percentage = percentage * 100;
 
     const data = {
       $set: {
@@ -88,7 +89,8 @@ route.put("/end_exam", fetchStudent, fetchquiz, async (req, res) => {
         total_correct: req.body.total_correct,
         time_took,
         total_marks,
-        percentage: parcentage,
+        percentage,
+        total_correct,
       },
     };
     const endExam = await db.updateOne({ student_id }, data);
