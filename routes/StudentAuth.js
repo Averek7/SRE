@@ -11,7 +11,7 @@ const fetchstudent = require("../middleware/fetchStudent");
 router.get("/dashboard", fetchstudent, async (req, res) => {
   try {
     const dashboard = await Appear.find({ student_id: req.student.id });
-    const student = req.student.id;
+    const quizzes = await Quiz.find();
     var current_datetime = new Date().getTime() + 19800000;
     var pending = 0;
     var absent = 0;
@@ -35,7 +35,7 @@ router.get("/dashboard", fetchstudent, async (req, res) => {
       if (element.percentage > 33) {
         pass += 1;
       } else {
-        fail = +1;
+        fail += 1;
       }
       average += element.percentage;
     }
@@ -70,13 +70,13 @@ router.get("/dashboard", fetchstudent, async (req, res) => {
       } else {
         obj.grade = "Fail";
       }
-      const quiz = await Quiz.findById(element.quiz_id);
-      obj.subject = quiz.subject;
+      const quizzes = await Quiz.findById(element.quiz_id);
+      obj.subject = quizzes.subject;
       obj.details = {
-        quiz_date: quiz.date,
-        quiz_time: quiz.time,
-        quiz_marks: quiz.marks,
-        quiz_duration: quiz.duration,
+        quiz_date: quizzes.date,
+        quiz_time: quizzes.time,
+        quiz_marks: quizzes.marks,
+        quiz_duration: quizzes.duration,
       };
       history.push(obj);
     }
@@ -173,7 +173,6 @@ router.post("/login_email", async (req, res) => {
     let status;
     const comparePassword = await bcrypt.compare(password, student.password);
     if (!comparePassword) {
-
       res
         .status(400)
         .json({ status, errors: "Please enter correct credentials" });
