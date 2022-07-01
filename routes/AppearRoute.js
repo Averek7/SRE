@@ -73,7 +73,7 @@ route.put("/end_exam", fetchStudent, fetchquiz, async (req, res) => {
         attempt_data[index].option_selected
       ) {
         var question_id = attempt_data[index].question_id;
-        total_correct++
+        total_correct++;
         var marks = await question.findById(question_id);
         marks = marks.marks;
         total_marks += marks;
@@ -105,9 +105,9 @@ route.put("/end_exam", fetchStudent, fetchquiz, async (req, res) => {
   }
 });
 
-route.post("/add" , async(req,res)=>{
-const data = await db.create(req.body)
-res.json({data})
-})
+route.post("/add", async (req, res) => {
+  const data = await db.create(req.body);
+  res.json({ data });
+});
 
 module.exports = route;
