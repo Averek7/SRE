@@ -3,7 +3,7 @@ const router = express.Router();
 const db = require("../component/Questions");
 const fetchadmin = require("../middleware/fetchAdmin");
 
-router.post("/:id/add_question", fetchadmin, async (req, res) => {
+router.post("/:quizid/add_question", fetchadmin, async (req, res) => {
   try {
     const admin = req.admin.id;
     if (!admin) {
@@ -12,7 +12,7 @@ router.post("/:id/add_question", fetchadmin, async (req, res) => {
         .json({ status, message: "only andmin can modify questions" });
     }
     let status = false;
-    const quiz_id = req.params.id;
+    const quiz_id = req.params.quizid;
     if (!quiz_id) {
       return res.status(404).json({ status: false, message: "Not found" });
     }

@@ -90,9 +90,9 @@ router.delete("/delete_quiz/:id", fetchadmin, async (req, res) => {
   }
 });
 
-router.get("/:id/view_all_questions", async (req, res) => {
+router.get("/:quizid/view_all_questions", async (req, res) => {
   try {
-    const quiz_id = req.params.id;
+    const quiz_id = req.params.quizid;
     if (!quiz_id) {
       return res
         .status(404)
