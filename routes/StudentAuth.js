@@ -24,7 +24,6 @@ router.get("/dashboard", fetchstudent, async (req, res) => {
       var summary = {
         Attended_test: dashboard.length,
         Pending_test: pending,
-        Absent: absent,
       };
       var element = dashboard[index];
       if (element.percentage > 33) {

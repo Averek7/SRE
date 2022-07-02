@@ -1,12 +1,16 @@
 const router = require("express").Router();
 const db = require("../component/Quiz");
-const jwt = require("jsonwebtoken");
-// const fetchquiz = require("../middleware/fetchquiz");
+const fetchadmin = require("../middleware/fetchAdmin");
 const questionDb = require("../component/Questions");
-const JWT_SECRET = "technoboot";
 
-router.post("/add_quiz", async (req, res) => {
+router.post("/add_quiz", fetchadmin, async (req, res) => {
   try {
+    const admin = req.admin.id;
+    if (!admin) {
+      return res
+        .status(401)
+        .json({ status, message: "only admin can add quiz" });
+    }
     let status = false;
     const { name, date, time, subject, marks, duration } = req.body;
     const quiz = await db.create({
@@ -17,20 +21,10 @@ router.post("/add_quiz", async (req, res) => {
       marks,
       duration,
     });
-
-    const data = {
-      quiz: {
-        id: quiz.id,
-      },
-    };
-
-    const quizToken = jwt.sign(data, JWT_SECRET);
-
     status = true;
     res.json({
       status,
       message: "Quiz added successfully",
-      result: quizToken,
     });
   } catch (e) {
     console.log(e.message);
@@ -49,8 +43,14 @@ router.get("/view_all_quiz", async (req, res) => {
   }
 });
 
-router.put("/update_quiz/:id", async (req, res) => {
+router.put("/update_quiz/:id", fetchadmin, async (req, res) => {
   try {
+    const admin = req.admin.id;
+    if (!admin) {
+      return res
+        .status(401)
+        .json({ status, message: "only admin can modify quiz" });
+    }
     let status = false;
     const id = req.params.id;
     if (!id) {
@@ -65,8 +65,14 @@ router.put("/update_quiz/:id", async (req, res) => {
     res.status(500).json({ status: false, message: "internal server error" });
   }
 });
-router.delete("/delete_quiz/:id", async (req, res) => {
+router.delete("/delete_quiz/:id", fetchadmin, async (req, res) => {
   try {
+    const admin = req.admin.id;
+    if (!admin) {
+      return res
+        .status(401)
+        .json({ status, message: "only admin can delete quiz" });
+    }
     let status = false;
     const id = req.params.id;
     if (!id) {
@@ -84,7 +90,7 @@ router.delete("/delete_quiz/:id", async (req, res) => {
   }
 });
 
-router.get("/fetch_all_question_with_quizId/:id", async (req, res) => {
+router.get("/:id/view_all_questions", async (req, res) => {
   try {
     const quiz_id = req.params.id;
     if (!quiz_id) {

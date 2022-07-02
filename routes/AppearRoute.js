@@ -2,14 +2,14 @@ const route = require("express").Router();
 const db = require("../component/Appear");
 const Attempt = require("../component/Attempted");
 const question = require("../component/Questions");
-const fetchquiz = require("../middleware/fetchquiz");
 const fetchStudent = require("../middleware/fetchStudent");
 const quiz = require("../component/Quiz");
 
-route.put("/start_exam", fetchStudent, fetchquiz, async (req, res) => {
+route.put("/:quizid/start_exam", fetchStudent, async (req, res) => {
   try {
     const student_id = req.student.id;
-    const quiz_id = req.quiz.id;
+    const quiz_id = req.params.quizid;
+
     const check = await db.findOne({ student_id, quiz_id });
 
     if (check) {
@@ -44,11 +44,11 @@ route.put("/start_exam", fetchStudent, fetchquiz, async (req, res) => {
   }
 });
 
-route.put("/end_exam", fetchStudent, fetchquiz, async (req, res) => {
+route.put("/:quizid/end_exam", fetchStudent, async (req, res) => {
   try {
     const student_id = req.student.id;
-    const quiz_id = req.quiz.id;
-    const check = await db.findOne({ student_id });
+    const quiz_id = req.params.quizid;
+    const check = await db.findOne({ student_id, quiz_id });
     if (!check) {
       return res.json({
         status: false,
