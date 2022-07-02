@@ -51,6 +51,9 @@ router.put(
         };
         const attempt_token = jwt.sign(data, SECRET_TOKEN);
         res.status(200).send({
+          student_id,
+          quiz_id,
+          question_id,
           option_selected: option_selected,
           message: "Option Selected",
           attempt_token,
@@ -62,9 +65,13 @@ router.put(
         { $set: { option_selected } }
       );
 
-      res
-        .status(200)
-        .send({ option_selected: option_selected, message: "Option Updated" });
+      res.status(200).send({
+        student_id,
+        quiz_id,
+        question_id,
+        option_selected: option_selected,
+        message: "Option Updated",
+      });
     } catch (error) {
       console.error(error.message);
       res.status(500).json("Some Error Occurred");
