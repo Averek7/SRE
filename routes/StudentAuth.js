@@ -11,10 +11,8 @@ const fetchstudent = require("../middleware/fetchStudent");
 router.get("/dashboard", fetchstudent, async (req, res) => {
   try {
     const dashboard = await Appear.find({ student_id: req.student.id });
-    const quizzes = await Quiz.find();
     var current_datetime = new Date().getTime() + 19800000;
     var pending = 0;
-    var absent = 0;
     var pass = 0;
     var fail = 0;
     var average = 0;
@@ -23,13 +21,9 @@ router.get("/dashboard", fetchstudent, async (req, res) => {
       if (current_datetime < pending_datetime) {
         pending++;
       }
-      if (!dashboard[index].quiz_id) {
-        absent++;
-      }
       var summary = {
         Attended_test: dashboard.length,
         Pending_test: pending,
-        Absent: absent,
       };
       var element = dashboard[index];
       if (element.percentage > 33) {

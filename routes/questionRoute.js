@@ -1,15 +1,21 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../component/Questions");
-const fetchquiz = require("../middleware/fetchquiz");
-const jwt = require("jsonwebtoken");
-const fetchquestion = require("../middleware/fetchquestion");
-const JWT_SECRET = "technoboot";
+const fetchadmin = require("../middleware/fetchAdmin");
 
-router.post("/add_question", fetchquiz, async (req, res) => {
+router.post("/:quizid/add_question", fetchadmin, async (req, res) => {
   try {
+    const admin = req.admin.id;
+    if (!admin) {
+      return res
+        .status(401)
+        .json({ status, message: "only andmin can modify questions" });
+    }
     let status = false;
-    const quiz_id = req.quiz.id;
+    const quiz_id = req.params.quizid;
+    if (!quiz_id) {
+      return res.status(404).json({ status: false, message: "Not found" });
+    }
     const { question, A, B, C, D, correct, marks } = req.body;
     const questions = await db.create({
       quiz_id,
@@ -22,19 +28,10 @@ router.post("/add_question", fetchquiz, async (req, res) => {
       marks,
     });
 
-    const data = {
-      questions: {
-        id: questions.id,
-      },
-    };
-
-    const questionToken = jwt.sign(data, JWT_SECRET);
-
     status = true;
     res.json({
       status,
       message: "Question Added Successfully",
-      questionToken,
     });
   } catch (e) {
     console.log(e.message);
@@ -42,29 +39,39 @@ router.post("/add_question", fetchquiz, async (req, res) => {
   }
 });
 
-router.get("/view_question", fetchquestion, async (req, res) => {
+router.get("/:quizid/view_question/:quesid", async (req, res) => {
   try {
-    const question_id = req.questions.id;
+    let status = false;
+    const quiz_id = req.params.quizid;
+    if (!quiz_id) {
+      return res.status(404).json({ status: false, message: "Quiz Not Found" });
+    }
+    const question_id = req.params.quesid;
+    if (!question_id) {
+      return res
+        .status(404)
+        .json({ status: false, message: "Question Not found" });
+    }
     const question = await db.findById(question_id);
-    res.json({ question });
+    res.json({
+      status: true,
+      message: "Fetched Question Successfully ",
+      question,
+    });
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Some Error Occurred");
   }
 });
 
-router.get("/view_all_questions", async (req, res) => {
+router.put("/update_question/:id", fetchadmin, async (req, res) => {
   try {
-    const allQuestion = await db.find();
-    res.json({ status: true, result: allQuestion });
-  } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ status: false, message: "internal server error" });
-  }
-});
-
-router.put("/update_question/:id", async (req, res) => {
-  try {
+    const admin = req.admin.id;
+    if (!admin) {
+      return res
+        .status(401)
+        .json({ status, message: "only andmin can modify questions" });
+    }
     let status = false;
     const id = req.params.id;
     if (!id) {
@@ -85,8 +92,14 @@ router.put("/update_question/:id", async (req, res) => {
       .json({ status: false, message: "No question found" });
   }
 });
-router.delete("/delete_question/:id", async (req, res) => {
+router.delete("/delete_question/:id", fetchadmin, async (req, res) => {
   try {
+    const admin = req.admin.id;
+    if (!admin) {
+      return res
+        .status(401)
+        .json({ status, message: "only andmin can modify questions" });
+    }
     let status = false;
     const id = req.params.id;
     if (!id) {
