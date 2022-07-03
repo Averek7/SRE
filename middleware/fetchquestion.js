@@ -4,7 +4,7 @@ const JWT_SECRET = "technoboot";
 const fetchquestion = async (req, res, next) => {
   const question_token = req.header("get-question");
   if (!question_token) {
-    res
+   return res
       .status(401)
       .send({ error: "Please authenticate with valid question id token" });
   }
