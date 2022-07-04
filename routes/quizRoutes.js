@@ -105,4 +105,26 @@ router.get("/:quizid/view_all_questions", async (req, res) => {
     res.status(500).json({ status: false, message: "internal server error" });
   }
 });
+
+router.get("/view_quiz/:quizid", async (req, res) => {
+  try {
+    const quiz_id = req.params.quizid;
+    if (!quiz_id) {
+      return res
+        .status(404)
+        .json({ status: false, message: "quiz id not found" });
+    }
+    console.log(quiz_id);
+    const quiz = await db.findById(quiz_id);
+    console.log(quiz);
+    if (!quiz) {
+      return res.json({ status: false, message: "no quiz found" });
+    }
+    res.json({ status: true, Data: quiz });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ status: false, message: "internal server error" });
+  }
+});
+
 module.exports = router;
