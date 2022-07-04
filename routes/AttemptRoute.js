@@ -36,7 +36,7 @@ router.put("/:quizid/:quesid/attempted", fetchstudent, async (req, res) => {
         correct_option,
       });
 
-      res.status(200).send({
+    return res.status(200).send({
         student_id,
         quiz_id,
         question_id,
@@ -50,7 +50,7 @@ router.put("/:quizid/:quesid/attempted", fetchstudent, async (req, res) => {
       { $set: { option_selected } }
     );
 
-    res.status(200).send({
+  return res.status(200).send({
       student_id,
       quiz_id,
       question_id,
@@ -59,7 +59,7 @@ router.put("/:quizid/:quesid/attempted", fetchstudent, async (req, res) => {
     });
   } catch (error) {
     console.error(error.message);
-    res.status(500).json("Some Error Occurred");
+   return res.status(500).json("Some Error Occurred");
   }
 });
 
