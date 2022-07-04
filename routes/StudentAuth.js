@@ -77,7 +77,7 @@ router.get("/dashboard", fetchstudent, async (req, res) => {
 
     res.json({ status: true, summary, history });
   } catch (error) {
-    console.error(error.message);
+    console.error(error);
     res.json("Some Error Occurred");
   }
 });
