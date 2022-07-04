@@ -12,10 +12,10 @@ router.put("/:quizid/:quesid/attempted", fetchstudent, async (req, res) => {
     const { option_selected } = req.body;
 
     if (!student_id) {
-      res.status(404).send("Missing Credentials, Please Re-Login");
+      return res.status(404).send("Missing Credentials, Please Re-Login");
     }
     if (!quiz_id || !question_id) {
-      res.status(404).send("No details found");
+      return res.status(404).send("No details found");
     }
 
     const Question = await Questions.findById(question_id.toString());
